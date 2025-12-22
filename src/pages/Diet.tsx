@@ -75,7 +75,7 @@ const Diet = () => {
                         <CardTitle className="text-base">{meal.name}</CardTitle>
                         <div className="flex items-center gap-1 text-sm text-muted-foreground">
                           <Clock className="w-3 h-3" />
-                          {meal.time}
+                          Best time to eat: {meal.time}
                         </div>
                       </div>
                     </div>
