@@ -7,9 +7,11 @@ import CalorieSummary from "@/components/CalorieSummary";
 import FoodEntryCard from "@/components/FoodEntryCard";
 import AddFoodDialog from "@/components/AddFoodDialog";
 import ThemeToggle from "@/components/ThemeToggle";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import MealBreakdown from "@/components/MealBreakdown";
 import { User, Session } from "@supabase/supabase-js";
 import { getMealTypeKeys } from "@/lib/mealTypes";
+import { useTranslation } from "react-i18next";
 
 interface FoodEntry {
   id: string;
@@ -158,6 +160,8 @@ const Index = () => {
     snack: foodEntries.filter(e => e.meal_type === "snack" || !e.meal_type).reduce((sum, e) => sum + e.calories, 0),
   };
 
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen gradient-hero">
       {/* Header */}
@@ -171,13 +175,14 @@ const Index = () => {
               <Leaf className="w-5 h-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="font-semibold text-foreground">Food Tracker</h1>
+              <h1 className="font-semibold text-foreground">{t("tracker.title")}</h1>
               <p className="text-xs text-muted-foreground">
-                {profile?.full_name ? `Welcome, ${profile.full_name.split(" ")[0]}` : "Track your nutrition"}
+                {profile?.full_name ? `${t("home.welcome")}, ${profile.full_name.split(" ")[0]}` : t("tracker.title")}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-1">
+            <LanguageSwitcher />
             <ThemeToggle />
             <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
               <UserIcon className="w-5 h-5" />
@@ -201,8 +206,8 @@ const Index = () => {
         {/* Today's Entries */}
         <div className="animate-slide-up" style={{ animationDelay: "0.2s" }}>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-foreground">Today's Food</h2>
-            <span className="text-sm text-muted-foreground">{foodEntries.length} entries</span>
+            <h2 className="text-lg font-semibold text-foreground">{t("tracker.todaysFood")}</h2>
+            <span className="text-sm text-muted-foreground">{foodEntries.length} {t("tracker.entries")}</span>
           </div>
 
           {foodEntries.length === 0 ? (
@@ -210,9 +215,9 @@ const Index = () => {
               <div className="w-16 h-16 rounded-2xl bg-secondary mx-auto mb-4 flex items-center justify-center">
                 <Leaf className="w-8 h-8 text-muted-foreground" />
               </div>
-              <h3 className="font-medium text-foreground mb-2">No food logged yet</h3>
+              <h3 className="font-medium text-foreground mb-2">{t("tracker.noFoodLogged")}</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Start tracking your meals to see your daily nutrition.
+                {t("tracker.startTracking")}
               </p>
             </div>
           ) : (
@@ -230,7 +235,7 @@ const Index = () => {
       </main>
 
       {/* Floating Action Button */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2">
+      <div className="fixed bottom-6 start-1/2 -translate-x-1/2 rtl:translate-x-1/2">
         <AddFoodDialog onFoodAdded={fetchFoodEntries} mealsPerDay={mealsPerDay} />
       </div>
     </div>
