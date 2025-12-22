@@ -1,10 +1,9 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Utensils, Clock, Flame, TrendingUp, Sparkles } from "lucide-react";
+import { ArrowLeft, Utensils, Clock, Flame } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
 
 interface Meal {
   name: string;
@@ -18,31 +17,18 @@ interface DietPlan {
   totalCalories: number;
   meals: Meal[];
   tips: string[];
-  // Personalized diet fields
-  summary?: string;
-  improvements?: string[];
-  weeklyPlan?: {
-    day1?: string;
-    day2?: string;
-    day3?: string;
-    day4?: string;
-    day5?: string;
-    day6?: string;
-    day7?: string;
-  };
 }
 
 const Diet = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const diet = location.state?.diet as DietPlan | undefined;
-  const isPersonalized = location.state?.isPersonalized as boolean | undefined;
 
   if (!diet) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
         <p className="text-muted-foreground mb-4">No diet plan available</p>
-        <Button onClick={() => navigate("/")}>Go Back</Button>
+        <Button onClick={() => navigate("/home")}>Go Back</Button>
       </div>
     );
   }
@@ -51,56 +37,16 @@ const Diet = () => {
     <div className="min-h-screen bg-background">
       <header className="p-4 flex items-center justify-between sticky top-0 bg-background/95 backdrop-blur z-10">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+          <Button variant="ghost" size="icon" onClick={() => navigate("/home")}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <div>
-            <h1 className="text-xl font-bold text-foreground">Your Diet Plan</h1>
-            {isPersonalized && (
-              <Badge variant="secondary" className="text-xs">
-                <Sparkles className="w-3 h-3 mr-1" />
-                Personalized
-              </Badge>
-            )}
-          </div>
+          <h1 className="text-xl font-bold text-foreground">Your Diet Plan</h1>
         </div>
         <ThemeToggle />
       </header>
 
       <ScrollArea className="h-[calc(100vh-80px)]">
         <main className="px-4 pb-8 space-y-6">
-          {/* Summary for personalized diet */}
-          {isPersonalized && diet.summary && (
-            <Card className="bg-gradient-to-br from-primary/10 to-secondary/10 border-primary/20">
-              <CardContent className="p-4">
-                <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4 text-primary" />
-                  Your Eating Analysis
-                </h3>
-                <p className="text-sm text-muted-foreground">{diet.summary}</p>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Improvements */}
-          {isPersonalized && diet.improvements && diet.improvements.length > 0 && (
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base">Suggested Improvements</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <ul className="space-y-2">
-                  {diet.improvements.map((improvement, index) => (
-                    <li key={index} className="flex items-start gap-2 text-sm">
-                      <span className="text-primary font-bold">{index + 1}.</span>
-                      <span className="text-muted-foreground">{improvement}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          )}
-
           {/* Total Calories Card */}
           <Card className="bg-gradient-to-br from-primary/20 to-primary/5 border-primary/20">
             <CardContent className="p-6 text-center">
@@ -155,27 +101,6 @@ const Diet = () => {
               </Card>
             ))}
           </div>
-
-          {/* Weekly Plan for personalized diet */}
-          {isPersonalized && diet.weeklyPlan && (
-            <div className="space-y-3">
-              <h2 className="text-lg font-semibold text-foreground">Weekly Overview</h2>
-              <div className="grid gap-2">
-                {Object.entries(diet.weeklyPlan).map(([day, overview]) => (
-                  <Card key={day} className="p-3">
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <span className="text-xs font-bold text-primary">
-                          {day.replace("day", "")}
-                        </span>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{overview}</p>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Tips */}
           {diet.tips && diet.tips.length > 0 && (

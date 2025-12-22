@@ -3,11 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Utensils, Sparkles, Loader2, User as UserIcon } from "lucide-react";
+import { Utensils, Sparkles, Loader2 } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useToast } from "@/hooks/use-toast";
 import { User } from "@supabase/supabase-js";
-import WeeklyMealTracker from "@/components/WeeklyMealTracker";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -124,37 +123,37 @@ const Home = () => {
     <div className="min-h-screen bg-background">
       <header className="p-4 flex items-center justify-between">
         <h1 className="text-xl font-bold text-foreground">NutriTrack</h1>
-        <div className="flex items-center gap-1">
-          <ThemeToggle />
-          <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
-            <UserIcon className="w-5 h-5" />
-          </Button>
-        </div>
+        <ThemeToggle />
       </header>
 
-      <main className="px-4 pb-8 space-y-6">
-        {/* Greeting */}
-        <div className="text-center pt-4">
-          <h2 className="text-2xl font-bold text-foreground mb-1">
+      <main className="px-4 pb-8 pt-8 flex flex-col items-center justify-center min-h-[calc(100vh-80px)]">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-foreground mb-2">
             Hey {firstName}! 👋
           </h2>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground">
             What would you like to do today?
           </p>
         </div>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-4 w-full max-w-md">
           <Card 
             className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-primary/50"
             onClick={() => navigate("/tracker")}
           >
-            <CardContent className="p-4 text-center">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2">
-                <Utensils className="w-5 h-5 text-primary" />
+            <CardHeader className="pb-2">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                <Utensils className="w-6 h-6 text-primary" />
               </div>
-              <p className="font-medium text-sm">Track Food</p>
-              <p className="text-xs text-muted-foreground">Log daily meals</p>
+              <CardTitle>Track Food</CardTitle>
+              <CardDescription>
+                Log your meals and track your daily calories
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full" variant="outline">
+                Go to Tracker
+              </Button>
             </CardContent>
           </Card>
 
@@ -162,22 +161,29 @@ const Home = () => {
             className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-primary/50"
             onClick={generatingDiet ? undefined : handleGenerateDiet}
           >
-            <CardContent className="p-4 text-center">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2">
-                {generatingDiet ? (
-                  <Loader2 className="w-5 h-5 text-primary animate-spin" />
-                ) : (
-                  <Sparkles className="w-5 h-5 text-primary" />
-                )}
+            <CardHeader className="pb-2">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                <Sparkles className="w-6 h-6 text-primary" />
               </div>
-              <p className="font-medium text-sm">Quick Diet</p>
-              <p className="text-xs text-muted-foreground">AI generated</p>
+              <CardTitle>Get AI Diet Plan</CardTitle>
+              <CardDescription>
+                Generate a personalized diet based on your health profile
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full" disabled={generatingDiet}>
+                {generatingDiet ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  "Generate Diet"
+                )}
+              </Button>
             </CardContent>
           </Card>
         </div>
-
-        {/* Weekly Meal Tracker */}
-        {user && <WeeklyMealTracker userId={user.id} />}
       </main>
     </div>
   );
