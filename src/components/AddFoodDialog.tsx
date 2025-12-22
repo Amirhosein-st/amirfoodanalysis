@@ -376,7 +376,7 @@ const AddFoodDialog = ({ onFoodAdded, mealsPerDay }: AddFoodDialogProps) => {
                 Calories
                 {targetCalories && (
                   <span className="text-xs text-muted-foreground ml-1">
-                    (هدف: {targetCalories})
+                    (target: {targetCalories})
                   </span>
                 )}
               </Label>
