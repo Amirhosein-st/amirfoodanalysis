@@ -7,6 +7,7 @@ import CalorieSummary from "@/components/CalorieSummary";
 import FoodEntryCard from "@/components/FoodEntryCard";
 import AddFoodDialog from "@/components/AddFoodDialog";
 import ThemeToggle from "@/components/ThemeToggle";
+import MealBreakdown from "@/components/MealBreakdown";
 import { User, Session } from "@supabase/supabase-js";
 
 interface FoodEntry {
@@ -124,6 +125,14 @@ const Index = () => {
   const totalFat = foodEntries.reduce((sum, entry) => sum + (entry.fat || 0), 0);
   const goalCalories = profile?.daily_calorie_goal || 2000;
 
+  // Calculate calories per meal type
+  const mealCalories = {
+    breakfast: foodEntries.filter(e => e.meal_type === "breakfast").reduce((sum, e) => sum + e.calories, 0),
+    lunch: foodEntries.filter(e => e.meal_type === "lunch").reduce((sum, e) => sum + e.calories, 0),
+    dinner: foodEntries.filter(e => e.meal_type === "dinner").reduce((sum, e) => sum + e.calories, 0),
+    snack: foodEntries.filter(e => e.meal_type === "snack" || !e.meal_type).reduce((sum, e) => sum + e.calories, 0),
+  };
+
   return (
     <div className="min-h-screen gradient-hero">
       {/* Header */}
@@ -161,6 +170,8 @@ const Index = () => {
           carbs={totalCarbs}
           fat={totalFat}
         />
+
+        <MealBreakdown mealCalories={mealCalories} />
 
         {/* Today's Entries */}
         <div className="animate-slide-up" style={{ animationDelay: "0.2s" }}>
