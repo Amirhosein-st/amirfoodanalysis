@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -111,6 +112,20 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Outfit', sans-serif;
+  }
+
+  /* RTL Support for Persian */
+  html[dir="rtl"] body {
+    font-family: 'Vazirmatn', sans-serif;
+  }
+
+  html[dir="rtl"] {
+    direction: rtl;
+  }
+
+  /* Fix icon directions in RTL */
+  html[dir="rtl"] .rtl-flip {
+    transform: scaleX(-1);
   }
 }
 
