@@ -618,7 +618,7 @@ const Onboarding = () => {
   return (
     <div className="min-h-screen gradient-hero flex flex-col">
       {/* Header */}
-      <header className="bg-card/80 backdrop-blur-lg border-b border-border safe-area-top">
+      <header className="bg-card/80 backdrop-blur-lg border-b border-border">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl gradient-primary shadow-soft flex items-center justify-center">

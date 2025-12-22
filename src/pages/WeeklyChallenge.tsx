@@ -225,7 +225,7 @@ const WeeklyChallenge = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="p-4 flex items-center justify-between border-b border-border safe-area-top">
+      <header className="p-4 flex items-center justify-between border-b border-border">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
             <ArrowLeft className="w-5 h-5" />
