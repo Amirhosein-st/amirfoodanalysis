@@ -111,7 +111,7 @@ const AddFoodDialog = ({ onFoodAdded, mealsPerDay }: AddFoodDialogProps) => {
       return {
         show: true,
         percentage,
-        message: `این غذا ${foodCalories} کالری دارد که بیشتر از هدف ${targetCalories} کالری برای این وعده است. توصیه می‌شود حدود ${percentage}% از این غذا را بخورید.`,
+        message: `This food has ${foodCalories} calories, which exceeds the ${targetCalories} calorie target for this meal. It is recommended to eat about ${percentage}% of this portion.`,
       };
     }
     
@@ -411,7 +411,7 @@ const AddFoodDialog = ({ onFoodAdded, mealsPerDay }: AddFoodDialogProps) => {
             <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 space-y-2">
               <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
                 <AlertTriangle className="w-4 h-4" />
-                <span className="font-medium text-sm">توصیه مقدار مصرف</span>
+                <span className="font-medium text-sm">Portion Recommendation</span>
               </div>
               <p className="text-sm text-amber-700 dark:text-amber-300">
                 {portionRecommendation.message}
