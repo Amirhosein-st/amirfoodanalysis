@@ -55,6 +55,8 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_set: boolean | null
+          avatar_url: string | null
           created_at: string
           daily_calorie_goal: number | null
           full_name: string | null
@@ -62,8 +64,12 @@ export type Database = {
           onboarding_completed: boolean | null
           updated_at: string
           user_id: string
+          username: string | null
+          username_set: boolean | null
         }
         Insert: {
+          avatar_set?: boolean | null
+          avatar_url?: string | null
           created_at?: string
           daily_calorie_goal?: number | null
           full_name?: string | null
@@ -71,8 +77,12 @@ export type Database = {
           onboarding_completed?: boolean | null
           updated_at?: string
           user_id: string
+          username?: string | null
+          username_set?: boolean | null
         }
         Update: {
+          avatar_set?: boolean | null
+          avatar_url?: string | null
           created_at?: string
           daily_calorie_goal?: number | null
           full_name?: string | null
@@ -80,6 +90,8 @@ export type Database = {
           onboarding_completed?: boolean | null
           updated_at?: string
           user_id?: string
+          username?: string | null
+          username_set?: boolean | null
         }
         Relationships: []
       }
