@@ -5,12 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Utensils, Sparkles, Loader2, Calendar } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useToast } from "@/hooks/use-toast";
 import { User } from "@supabase/supabase-js";
+import { useTranslation } from "react-i18next";
 
 const Home = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [generatingDiet, setGeneratingDiet] = useState(false);
@@ -79,7 +82,7 @@ const Home = () => {
 
       if (healthError || !healthProfile) {
         toast({
-          title: "Error",
+          title: t("common.error"),
           description: "Could not fetch your health profile. Please complete onboarding first.",
           variant: "destructive",
         });
@@ -91,16 +94,14 @@ const Home = () => {
         body: { healthProfile },
       });
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
-      // Navigate to diet page with the generated diet
-      navigate("/diet", { state: { diet: data.diet } });
+      // Navigate to diet page with the generated plan
+      navigate("/diet", { state: { diet: data } });
     } catch (error) {
       console.error("Error generating diet:", error);
       toast({
-        title: "Error",
+        title: t("common.error"),
         description: "Failed to generate diet plan. Please try again.",
         variant: "destructive",
       });
@@ -123,13 +124,16 @@ const Home = () => {
     <div className="min-h-screen bg-background">
       <header className="p-4 flex items-center justify-between">
         <h1 className="text-xl font-bold text-foreground">NutriTrack</h1>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <LanguageSwitcher />
+          <ThemeToggle />
+        </div>
       </header>
 
       <main className="px-4 pb-8 pt-8 flex flex-col items-center justify-center min-h-[calc(100vh-80px)]">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-foreground mb-2">
-            Hey {firstName}! 👋
+            {t("home.welcome")}, {firstName}! 👋
           </h2>
           <p className="text-muted-foreground">
             What would you like to do today?
@@ -145,14 +149,14 @@ const Home = () => {
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
                 <Utensils className="w-6 h-6 text-primary" />
               </div>
-              <CardTitle>Track Food</CardTitle>
+              <CardTitle>{t("home.foodTracker")}</CardTitle>
               <CardDescription>
-                Log your meals and track your daily calories
+                {t("home.trackDescription")}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button className="w-full" variant="outline">
-                Go to Tracker
+                {t("home.openTracker")}
               </Button>
             </CardContent>
           </Card>
@@ -165,7 +169,7 @@ const Home = () => {
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
                 <Sparkles className="w-6 h-6 text-primary" />
               </div>
-              <CardTitle>Get AI Diet Plan</CardTitle>
+              <CardTitle>{t("home.generateDiet")}</CardTitle>
               <CardDescription>
                 Generate a personalized diet based on your health profile
               </CardDescription>
@@ -175,10 +179,10 @@ const Home = () => {
                 {generatingDiet ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Generating...
+                    {t("home.generating")}
                   </>
                 ) : (
-                  "Generate Diet"
+                  t("home.generateDiet")
                 )}
               </Button>
             </CardContent>
@@ -192,14 +196,14 @@ const Home = () => {
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
                 <Calendar className="w-6 h-6 text-primary" />
               </div>
-              <CardTitle>7-Day Challenge</CardTitle>
+              <CardTitle>{t("home.weeklyChallenge")}</CardTitle>
               <CardDescription>
-                Log your meals for 7 days and get a unique AI diet plan based on your eating habits
+                {t("home.weeklyDescription")}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button className="w-full" variant="outline">
-                Start Challenge
+                {t("home.startChallenge")}
               </Button>
             </CardContent>
           </Card>

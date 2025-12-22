@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Leaf, Mail, Lock, User, ArrowRight } from "lucide-react";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const authSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -26,6 +28,7 @@ const Auth = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const validateForm = () => {
     try {
@@ -78,14 +81,14 @@ const Auth = () => {
         });
         if (error) throw error;
         toast({
-          title: "Welcome!",
-          description: "Your account has been created successfully.",
+          title: t("auth.signUpSuccess"),
+          description: t("auth.checkEmail"),
         });
         navigate("/onboarding");
       }
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: t("common.error"),
         description: error.message || "An error occurred",
         variant: "destructive",
       });
@@ -96,14 +99,18 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen gradient-hero flex items-center justify-center p-4">
+      <div className="absolute top-4 end-4">
+        <LanguageSwitcher />
+      </div>
+      
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8 animate-fade-in">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl gradient-primary shadow-glow mb-4">
             <Leaf className="w-8 h-8 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold text-foreground">NutriTrack</h1>
-          <p className="text-muted-foreground mt-2">Track your nutrition journey</p>
+          <h1 className="text-3xl font-bold text-foreground">{t("auth.title")}</h1>
+          <p className="text-muted-foreground mt-2">{t("auth.subtitle")}</p>
         </div>
 
         {/* Auth Card */}
@@ -115,7 +122,7 @@ const Auth = () => {
               onClick={() => setIsLogin(true)}
               type="button"
             >
-              Sign In
+              {t("auth.signIn")}
             </Button>
             <Button
               variant={!isLogin ? "default" : "ghost"}
@@ -123,7 +130,7 @@ const Auth = () => {
               onClick={() => setIsLogin(false)}
               type="button"
             >
-              Sign Up
+              {t("auth.signUp")}
             </Button>
           </div>
 
@@ -132,14 +139,14 @@ const Auth = () => {
               <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <User className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
                     id="fullName"
                     type="text"
                     placeholder="John Doe"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="pl-10"
+                    className="ps-10"
                   />
                 </div>
                 {errors.fullName && <p className="text-destructive text-sm">{errors.fullName}</p>}
@@ -147,39 +154,39 @@ const Auth = () => {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("auth.email")}</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Mail className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder={t("auth.emailPlaceholder")}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10"
+                  className="ps-10"
                 />
               </div>
               {errors.email && <p className="text-destructive text-sm">{errors.email}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t("auth.password")}</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Lock className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   id="password"
                   type="password"
-                  placeholder="••••••••"
+                  placeholder={t("auth.passwordPlaceholder")}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10"
+                  className="ps-10"
                 />
               </div>
               {errors.password && <p className="text-destructive text-sm">{errors.password}</p>}
             </div>
 
             <Button type="submit" variant="hero" size="lg" className="w-full mt-6" disabled={loading}>
-              {loading ? "Please wait..." : isLogin ? "Sign In" : "Create Account"}
+              {loading ? t("common.loading") : isLogin ? t("auth.signIn") : t("auth.signUp")}
               <ArrowRight className="w-4 h-4" />
             </Button>
           </form>
