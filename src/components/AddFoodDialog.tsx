@@ -296,6 +296,8 @@ const AddFoodDialog = ({ onFoodAdded }: AddFoodDialogProps) => {
               value={foodName}
               onChange={(e) => setFoodName(e.target.value)}
               required
+              readOnly={isAnalyzed}
+              className={isAnalyzed ? "bg-muted cursor-not-allowed" : ""}
             />
           </div>
 
