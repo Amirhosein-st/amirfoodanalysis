@@ -6,6 +6,7 @@ import { Leaf, LogOut, Settings } from "lucide-react";
 import CalorieSummary from "@/components/CalorieSummary";
 import FoodEntryCard from "@/components/FoodEntryCard";
 import AddFoodDialog from "@/components/AddFoodDialog";
+import ThemeToggle from "@/components/ThemeToggle";
 import { User, Session } from "@supabase/supabase-js";
 
 interface FoodEntry {
@@ -133,9 +134,15 @@ const Index = () => {
               </p>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={handleLogout}>
-            <LogOut className="w-5 h-5" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
+              <Settings className="w-5 h-5" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={handleLogout}>
+              <LogOut className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
       </header>
 
