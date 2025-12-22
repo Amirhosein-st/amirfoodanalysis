@@ -32,6 +32,10 @@ interface HealthProfile {
   meals_per_day: number | null;
 }
 
+interface SavedDietPlan {
+  total_calories: number;
+}
+
 const Index = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -39,6 +43,7 @@ const Index = () => {
   const [foodEntries, setFoodEntries] = useState<FoodEntry[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [healthProfile, setHealthProfile] = useState<HealthProfile | null>(null);
+  const [savedDietPlan, setSavedDietPlan] = useState<SavedDietPlan | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -112,11 +117,28 @@ const Index = () => {
     }
   };
 
+  const fetchSavedDietPlan = async () => {
+    if (!user) return;
+    
+    const { data, error } = await supabase
+      .from("saved_diet_plans")
+      .select("total_calories")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (!error && data) {
+      setSavedDietPlan(data);
+    }
+  };
+
   useEffect(() => {
     if (user) {
       fetchFoodEntries();
       fetchProfile();
       fetchHealthProfile();
+      fetchSavedDietPlan();
     }
   }, [user]);
 
@@ -144,7 +166,8 @@ const Index = () => {
   const totalProtein = foodEntries.reduce((sum, entry) => sum + (entry.protein || 0), 0);
   const totalCarbs = foodEntries.reduce((sum, entry) => sum + (entry.carbs || 0), 0);
   const totalFat = foodEntries.reduce((sum, entry) => sum + (entry.fat || 0), 0);
-  const goalCalories = profile?.daily_calorie_goal || 2000;
+  // Use diet plan total calories if available, otherwise fall back to profile goal
+  const goalCalories = savedDietPlan?.total_calories || profile?.daily_calorie_goal || 2000;
 
   // Get meal types based on user's meals_per_day setting
   const mealsPerDay = healthProfile?.meals_per_day || 4;
