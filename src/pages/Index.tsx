@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Leaf, LogOut, Settings } from "lucide-react";
+import { Leaf, LogOut, User as UserIcon } from "lucide-react";
 import CalorieSummary from "@/components/CalorieSummary";
 import FoodEntryCard from "@/components/FoodEntryCard";
 import AddFoodDialog from "@/components/AddFoodDialog";
@@ -143,7 +143,7 @@ const Index = () => {
           <div className="flex items-center gap-1">
             <ThemeToggle />
             <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
-              <Settings className="w-5 h-5" />
+              <UserIcon className="w-5 h-5" />
             </Button>
             <Button variant="ghost" size="icon" onClick={handleLogout}>
               <LogOut className="w-5 h-5" />
