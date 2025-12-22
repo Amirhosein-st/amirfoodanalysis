@@ -59,7 +59,7 @@ const Install = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="p-4 flex items-center justify-between">
+      <header className="p-4 flex items-center justify-between safe-area-top">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
             <ArrowLeft className="w-5 h-5" />

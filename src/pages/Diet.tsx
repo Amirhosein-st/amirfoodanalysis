@@ -75,7 +75,7 @@ const Diet = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="p-4 flex items-center justify-between sticky top-0 bg-background/95 backdrop-blur z-10">
+      <header className="p-4 flex items-center justify-between sticky top-0 bg-background/95 backdrop-blur z-10 safe-area-top">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
             <ArrowLeft className="w-5 h-5" />
