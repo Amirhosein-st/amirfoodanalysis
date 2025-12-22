@@ -167,7 +167,9 @@ const Profile = () => {
             <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <User className="w-5 h-5 text-primary" />
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+              <User className="w-4 h-4 text-primary" />
+            </div>
             <h1 className="font-semibold text-foreground">Profile Settings</h1>
           </div>
           <ThemeToggle />
