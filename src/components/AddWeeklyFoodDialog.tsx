@@ -325,40 +325,18 @@ const AddWeeklyFoodDialog = ({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="calories" className="text-foreground">Calories</Label>
-                <Input
-                  id="calories"
-                  type="number"
-                  min={0}
-                  value={formData.calories}
-                  onChange={(e) =>
-                    setFormData({ ...formData, calories: parseInt(e.target.value) || 0 })
-                  }
-                  className="bg-background border-border"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="mealType" className="text-foreground">Meal Type</Label>
-                <Select
-                  value={formData.mealType}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, mealType: value })
-                  }
-                >
-                  <SelectTrigger className="bg-background border-border">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-background border-border z-50">
-                    {MEAL_TYPES.map((type) => (
-                      <SelectItem key={type.value} value={type.value}>
-                        {type.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="calories" className="text-foreground">Calories</Label>
+              <Input
+                id="calories"
+                type="number"
+                min={0}
+                value={formData.calories}
+                onChange={(e) =>
+                  setFormData({ ...formData, calories: parseInt(e.target.value) || 0 })
+                }
+                className="bg-background border-border"
+              />
             </div>
 
             <div className="grid grid-cols-3 gap-3">
