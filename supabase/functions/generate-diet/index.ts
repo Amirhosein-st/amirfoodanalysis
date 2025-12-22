@@ -28,6 +28,11 @@ serve(async (req) => {
       2. Gradually improves their diet while respecting their tastes
       3. Considers their health goals and profile
       
+      IMPORTANT CALORIE DISTRIBUTION: 
+      - Breakfast and Lunch should have MORE calories than Dinner and Snack
+      - Recommended distribution: Breakfast ~30%, Lunch ~35%, Dinner ~25%, Snack ~10%
+      - Front-load calories earlier in the day for better metabolism and energy
+      
       IMPORTANT: You must respond with ONLY a valid JSON object, no markdown, no code blocks, just pure JSON.
       
       The JSON must have this exact structure:
@@ -99,6 +104,13 @@ Analyze their eating patterns and create a personalized diet that builds on what
     } else {
       // Standard diet based on health profile only
       systemPrompt = `You are a professional nutritionist. Based on the user's health profile, create a personalized daily diet plan. 
+      
+      IMPORTANT CALORIE DISTRIBUTION: 
+      - Breakfast and Lunch should have MORE calories than Dinner and Snack
+      - For 4 meals: Breakfast ~30%, Lunch ~35%, Dinner ~25%, Snack ~10%
+      - For 3 meals: Breakfast ~35%, Lunch ~40%, Dinner ~25%
+      - For 2 meals: Breakfast ~55%, Dinner ~45%
+      - Front-load calories earlier in the day for better metabolism and energy
       
       IMPORTANT: You must respond with ONLY a valid JSON object, no markdown, no code blocks, just pure JSON.
       
