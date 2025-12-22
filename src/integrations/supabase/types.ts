@@ -59,6 +59,7 @@ export type Database = {
           daily_calorie_goal: number | null
           full_name: string | null
           id: string
+          onboarding_completed: boolean | null
           updated_at: string
           user_id: string
         }
@@ -67,6 +68,7 @@ export type Database = {
           daily_calorie_goal?: number | null
           full_name?: string | null
           id?: string
+          onboarding_completed?: boolean | null
           updated_at?: string
           user_id: string
         }
@@ -75,8 +77,75 @@ export type Database = {
           daily_calorie_goal?: number | null
           full_name?: string | null
           id?: string
+          onboarding_completed?: boolean | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_health_profiles: {
+        Row: {
+          activity_level: string
+          age: number
+          created_at: string
+          diet_preference: string
+          disliked_foods: string[] | null
+          food_allergies: string[] | null
+          gender: string
+          goal: string
+          height: number
+          id: string
+          liked_foods: string[] | null
+          meals_per_day: number
+          medical_conditions: string[] | null
+          sleep_hours: number
+          target_weight: number
+          updated_at: string
+          user_id: string
+          water_intake: number
+          weight: number
+        }
+        Insert: {
+          activity_level: string
+          age: number
+          created_at?: string
+          diet_preference: string
+          disliked_foods?: string[] | null
+          food_allergies?: string[] | null
+          gender: string
+          goal?: string
+          height: number
+          id?: string
+          liked_foods?: string[] | null
+          meals_per_day: number
+          medical_conditions?: string[] | null
+          sleep_hours: number
+          target_weight: number
+          updated_at?: string
+          user_id: string
+          water_intake: number
+          weight: number
+        }
+        Update: {
+          activity_level?: string
+          age?: number
+          created_at?: string
+          diet_preference?: string
+          disliked_foods?: string[] | null
+          food_allergies?: string[] | null
+          gender?: string
+          goal?: string
+          height?: number
+          id?: string
+          liked_foods?: string[] | null
+          meals_per_day?: number
+          medical_conditions?: string[] | null
+          sleep_hours?: number
+          target_weight?: number
+          updated_at?: string
+          user_id?: string
+          water_intake?: number
+          weight?: number
         }
         Relationships: []
       }

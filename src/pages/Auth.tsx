@@ -81,7 +81,7 @@ const Auth = () => {
           title: "Welcome!",
           description: "Your account has been created successfully.",
         });
-        navigate("/");
+        navigate("/onboarding");
       }
     } catch (error: any) {
       toast({

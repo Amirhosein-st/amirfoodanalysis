@@ -23,6 +23,7 @@ interface FoodEntry {
 interface Profile {
   daily_calorie_goal: number | null;
   full_name: string | null;
+  onboarding_completed: boolean | null;
 }
 
 const Index = () => {
@@ -76,11 +77,16 @@ const Index = () => {
     
     const { data, error } = await supabase
       .from("profiles")
-      .select("daily_calorie_goal, full_name")
+      .select("daily_calorie_goal, full_name, onboarding_completed")
       .eq("user_id", user.id)
       .single();
 
     if (!error && data) {
+      // Redirect to onboarding if not completed
+      if (!data.onboarding_completed) {
+        navigate("/onboarding");
+        return;
+      }
       setProfile(data);
     }
   };
