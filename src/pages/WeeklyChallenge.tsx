@@ -89,9 +89,31 @@ const WeeklyChallenge = () => {
     return foodLogs.filter((log) => log.day_number === dayNumber);
   };
 
+  const getMealCountForDay = (dayNumber: number) => {
+    return getLogsForDay(dayNumber).length;
+  };
+
+  const canAccessDay = (dayNumber: number) => {
+    if (dayNumber === 1) return true;
+    // Check if previous day has at least 2 meals
+    return getMealCountForDay(dayNumber - 1) >= 2;
+  };
+
   const getDayProgress = () => {
     const daysWithLogs = new Set(foodLogs.map((log) => log.day_number));
     return daysWithLogs.size;
+  };
+
+  const handleDaySelect = (dayNum: number) => {
+    if (!canAccessDay(dayNum)) {
+      toast({
+        title: "Complete previous day first",
+        description: `Add at least 2 meals to Day ${dayNum - 1} before moving to Day ${dayNum}`,
+        variant: "destructive",
+      });
+      return;
+    }
+    setSelectedDay(dayNum);
   };
 
   const handleGeneratePersonalizedDiet = async () => {
@@ -238,13 +260,15 @@ const WeeklyChallenge = () => {
           {DAYS.map((day, index) => {
             const dayNum = index + 1;
             const hasLogs = foodLogs.some((log) => log.day_number === dayNum);
+            const isAccessible = canAccessDay(dayNum);
             return (
               <Button
                 key={dayNum}
                 variant={selectedDay === dayNum ? "default" : "outline"}
                 size="sm"
-                onClick={() => setSelectedDay(dayNum)}
-                className="relative"
+                onClick={() => handleDaySelect(dayNum)}
+                className={`relative ${!isAccessible ? "opacity-50" : ""}`}
+                disabled={!isAccessible}
               >
                 {day}
                 {hasLogs && selectedDay !== dayNum && (
