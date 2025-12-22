@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Leaf, LogOut, User as UserIcon } from "lucide-react";
+import { Leaf, ArrowLeft, User as UserIcon } from "lucide-react";
 import CalorieSummary from "@/components/CalorieSummary";
 import FoodEntryCard from "@/components/FoodEntryCard";
 import AddFoodDialog from "@/components/AddFoodDialog";
@@ -84,7 +84,7 @@ const Index = () => {
     if (!error && data) {
       // Redirect to onboarding if not completed
       if (!data.onboarding_completed) {
-        navigate("/onboarding");
+        navigate("/");
         return;
       }
       setProfile(data);
@@ -130,11 +130,14 @@ const Index = () => {
       <header className="bg-card/80 backdrop-blur-lg border-b border-border sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
             <div className="w-10 h-10 rounded-xl gradient-primary shadow-soft flex items-center justify-center">
               <Leaf className="w-5 h-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="font-semibold text-foreground">NutriTrack</h1>
+              <h1 className="font-semibold text-foreground">Food Tracker</h1>
               <p className="text-xs text-muted-foreground">
                 {profile?.full_name ? `Welcome, ${profile.full_name.split(" ")[0]}` : "Track your nutrition"}
               </p>
