@@ -145,9 +145,6 @@ const Index = () => {
             <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
               <UserIcon className="w-5 h-5" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={handleLogout}>
-              <LogOut className="w-5 h-5" />
-            </Button>
           </div>
         </div>
       </header>
