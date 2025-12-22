@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, User, Save, Loader2, Mail, Scale, Ruler, Calendar, Users, Camera } from "lucide-react";
+import { ArrowLeft, User, Save, Loader2, Mail, Scale, Ruler, Calendar, Users, Camera, LogOut } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -414,6 +414,18 @@ const Profile = () => {
             )}
           </Button>
         )}
+
+        <Button
+          variant="outline"
+          className="w-full gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+          onClick={async () => {
+            await supabase.auth.signOut();
+            navigate("/auth");
+          }}
+        >
+          <LogOut className="w-4 h-4" />
+          Log Out
+        </Button>
       </main>
     </div>
   );
