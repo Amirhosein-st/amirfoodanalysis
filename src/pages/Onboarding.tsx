@@ -15,6 +15,7 @@ interface OnboardingData {
   targetWeight: number | null;
   height: number | null;
   age: number | null;
+  nationality: string | null;
   gender: string | null;
   activityLevel: string | null;
   dietPreference: string | null;
@@ -27,7 +28,14 @@ interface OnboardingData {
   waterIntake: number | null;
 }
 
-const TOTAL_STEPS = 14;
+const TOTAL_STEPS = 15;
+
+const commonNationalities = [
+  "American", "British", "Canadian", "Australian", "Indian", 
+  "Chinese", "Japanese", "Korean", "Brazilian", "Mexican",
+  "German", "French", "Italian", "Spanish", "Dutch",
+  "Russian", "Turkish", "Saudi", "Emirati", "Egyptian"
+];
 
 const commonMedicalConditions = ["Diabetes", "Hypertension", "Heart Disease", "Thyroid Issues", "PCOS"];
 const commonAllergies = ["Peanuts", "Tree Nuts", "Dairy", "Eggs", "Shellfish", "Gluten", "Soy"];
@@ -48,6 +56,7 @@ const Onboarding = () => {
     targetWeight: null,
     height: null,
     age: null,
+    nationality: null,
     gender: null,
     activityLevel: null,
     dietPreference: null,
@@ -137,36 +146,42 @@ const Onboarding = () => {
         }
         break;
       case 5:
+        if (!data.nationality) {
+          setError("Please select your nationality");
+          return false;
+        }
+        break;
+      case 6:
         if (!data.gender) {
           setError("Please select your gender");
           return false;
         }
         break;
-      case 6:
+      case 7:
         if (!data.activityLevel) {
           setError("Please select your activity level");
           return false;
         }
         break;
-      case 7:
+      case 8:
         if (!data.dietPreference) {
           setError("Please select your diet preference");
           return false;
         }
         break;
-      case 8:
+      case 9:
         if (!data.mealsPerDay || data.mealsPerDay < 2 || data.mealsPerDay > 4) {
           setError("Please select meals per day (2-4)");
           return false;
         }
         break;
-      case 13:
+      case 14:
         if (data.sleepHours === null || data.sleepHours < 0 || data.sleepHours > 16) {
           setError("Please enter valid sleep hours (0-16)");
           return false;
         }
         break;
-      case 14:
+      case 15:
         if (data.waterIntake === null || data.waterIntake < 0 || data.waterIntake > 10) {
           setError("Please enter valid water intake (0-10 liters)");
           return false;
@@ -205,6 +220,7 @@ const Onboarding = () => {
         target_weight: data.targetWeight!,
         height: data.height!,
         age: data.age!,
+        nationality: data.nationality,
         gender: data.gender!,
         activity_level: data.activityLevel!,
         goal: "fat_loss",
@@ -344,6 +360,38 @@ const Onboarding = () => {
       case 5:
         return (
           <div className="space-y-4">
+            <h2 className="text-2xl font-bold text-foreground">What's your nationality?</h2>
+            <p className="text-muted-foreground">This helps customize meal suggestions to your cuisine</p>
+            <div className="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto">
+              {commonNationalities.map((nat) => (
+                <Button
+                  key={nat}
+                  type="button"
+                  variant={data.nationality === nat ? "default" : "outline"}
+                  className={`h-12 text-sm ${data.nationality === nat ? "gradient-primary text-primary-foreground" : ""}`}
+                  onClick={() => updateData("nationality", nat)}
+                >
+                  {nat}
+                </Button>
+              ))}
+            </div>
+            <div className="space-y-2 pt-2">
+              <Label htmlFor="customNationality">Or enter your nationality</Label>
+              <Input
+                id="customNationality"
+                type="text"
+                placeholder="Your nationality"
+                value={data.nationality && !commonNationalities.includes(data.nationality) ? data.nationality : ""}
+                onChange={(e) => updateData("nationality", e.target.value || null)}
+                className="text-lg h-14"
+              />
+            </div>
+          </div>
+        );
+
+      case 6:
+        return (
+          <div className="space-y-4">
             <h2 className="text-2xl font-bold text-foreground">What's your gender?</h2>
             <p className="text-muted-foreground">This helps calculate accurate calorie needs</p>
             <div className="grid grid-cols-2 gap-4">
@@ -362,7 +410,7 @@ const Onboarding = () => {
           </div>
         );
 
-      case 6:
+      case 7:
         return (
           <div className="space-y-4">
             <h2 className="text-2xl font-bold text-foreground">How active are you?</h2>
@@ -390,7 +438,7 @@ const Onboarding = () => {
           </div>
         );
 
-      case 7:
+      case 8:
         return (
           <div className="space-y-4">
             <h2 className="text-2xl font-bold text-foreground">What's your diet preference?</h2>
@@ -416,7 +464,7 @@ const Onboarding = () => {
           </div>
         );
 
-      case 8:
+      case 9:
         return (
           <div className="space-y-4">
             <h2 className="text-2xl font-bold text-foreground">How many meals per day?</h2>
@@ -437,7 +485,7 @@ const Onboarding = () => {
           </div>
         );
 
-      case 9:
+      case 10:
         return renderChipsStep(
           "Any medical conditions?",
           "Select all that apply (optional)",
@@ -445,7 +493,7 @@ const Onboarding = () => {
           commonMedicalConditions
         );
 
-      case 10:
+      case 11:
         return renderChipsStep(
           "Any food allergies?",
           "Select all that apply (optional)",
@@ -453,7 +501,7 @@ const Onboarding = () => {
           commonAllergies
         );
 
-      case 11:
+      case 12:
         return renderChipsStep(
           "Foods you dislike?",
           "We'll avoid these in recommendations (optional)",
@@ -461,7 +509,7 @@ const Onboarding = () => {
           commonFoods
         );
 
-      case 12:
+      case 13:
         return renderChipsStep(
           "Foods you enjoy?",
           "We'll include these in recommendations (optional)",
@@ -469,7 +517,7 @@ const Onboarding = () => {
           commonFoods
         );
 
-      case 13:
+      case 14:
         return (
           <div className="space-y-4">
             <h2 className="text-2xl font-bold text-foreground">How many hours do you sleep?</h2>
@@ -491,7 +539,7 @@ const Onboarding = () => {
           </div>
         );
 
-      case 14:
+      case 15:
         return (
           <div className="space-y-4">
             <h2 className="text-2xl font-bold text-foreground">Daily water intake?</h2>
