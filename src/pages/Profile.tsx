@@ -1,17 +1,20 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, User, Save, Loader2, Mail, Scale, Ruler, Calendar, Users, Camera, LogOut } from "lucide-react";
+import { ArrowLeft, User, Save, Loader2, Mail, Scale, Ruler, Calendar, Users, Camera, LogOut, Globe } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Profile = () => {
+  const { t } = useTranslation();
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -236,10 +239,10 @@ const Profile = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-5 h-5 rtl-flip" />
             </Button>
             <User className="w-5 h-5 text-primary" />
-            <h1 className="font-semibold text-foreground">Profile Settings</h1>
+            <h1 className="font-semibold text-foreground">{t("profile.profileSettings")}</h1>
           </div>
           <ThemeToggle />
         </div>
@@ -252,7 +255,7 @@ const Profile = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <User className="w-5 h-5 text-primary" />
-              Profile Picture
+              {t("profile.profilePicture")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -287,7 +290,7 @@ const Profile = () => {
               </div>
               {avatarSet && (
                 <p className="text-xs text-muted-foreground">
-                  Profile picture can only be set once
+                  {t("profile.avatarSetOnce")}
                 </p>
               )}
             </div>
@@ -299,12 +302,12 @@ const Profile = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Mail className="w-5 h-5 text-primary" />
-              Account Information
+              {t("profile.accountInfo")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("auth.email")}</Label>
               <Input
                 id="email"
                 value={user?.email || ""}
@@ -313,10 +316,10 @@ const Profile = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">{t("profile.username")}</Label>
               <Input
                 id="username"
-                placeholder="Choose a username"
+                placeholder={t("profile.usernamePlaceholder")}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 disabled={usernameSet}
@@ -324,7 +327,7 @@ const Profile = () => {
               />
               {usernameSet && (
                 <p className="text-xs text-muted-foreground">
-                  Username can only be set once
+                  {t("profile.usernameSetOnce")}
                 </p>
               )}
             </div>
@@ -336,7 +339,7 @@ const Profile = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Scale className="w-5 h-5 text-primary" />
-              Health Information
+              {t("profile.healthInfo")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -344,11 +347,11 @@ const Profile = () => {
               <div className="space-y-2">
                 <Label htmlFor="weight" className="flex items-center gap-1">
                   <Scale className="w-3 h-3" />
-                  Weight
+                  {t("profile.weight")}
                 </Label>
                 <Input
                   id="weight"
-                  value={healthProfile.weight ? `${healthProfile.weight} kg` : "Not set"}
+                  value={healthProfile.weight ? `${healthProfile.weight} ${t("common.kg")}` : t("common.notSet")}
                   readOnly
                   className="bg-muted cursor-not-allowed"
                 />
@@ -393,6 +396,19 @@ const Profile = () => {
           </CardContent>
         </Card>
 
+        {/* Language Settings */}
+        <Card className="shadow-soft animate-slide-up" style={{ animationDelay: "0.3s" }}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Globe className="w-5 h-5 text-primary" />
+              {t("profile.language")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <LanguageSwitcher />
+          </CardContent>
+        </Card>
+
 
         {(!usernameSet || !avatarSet) && (
           <Button
@@ -424,7 +440,7 @@ const Profile = () => {
           }}
         >
           <LogOut className="w-4 h-4" />
-          Log Out
+          {t("auth.signOut")}
         </Button>
       </main>
     </div>
