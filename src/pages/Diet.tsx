@@ -28,7 +28,7 @@ const Diet = () => {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
         <p className="text-muted-foreground mb-4">No diet plan available</p>
-        <Button onClick={() => navigate("/home")}>Go Back</Button>
+        <Button onClick={() => navigate("/")}>Go Back</Button>
       </div>
     );
   }
@@ -37,7 +37,7 @@ const Diet = () => {
     <div className="min-h-screen bg-background">
       <header className="p-4 flex items-center justify-between sticky top-0 bg-background/95 backdrop-blur z-10">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/home")}>
+          <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <h1 className="text-xl font-bold text-foreground">Your Diet Plan</h1>
