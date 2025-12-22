@@ -311,21 +311,6 @@ const Profile = () => {
           </CardContent>
         </Card>
 
-        {/* Appearance */}
-        <Card className="shadow-soft animate-slide-up" style={{ animationDelay: "0.3s" }}>
-          <CardHeader>
-            <CardTitle>Appearance</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium text-foreground">Dark Mode</p>
-                <p className="text-sm text-muted-foreground">Toggle dark/light theme</p>
-              </div>
-              <ThemeToggle />
-            </div>
-          </CardContent>
-        </Card>
 
         {(!usernameSet || !avatarSet) && (
           <Button
