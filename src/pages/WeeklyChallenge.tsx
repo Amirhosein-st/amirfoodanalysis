@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Camera, Check, Loader2, Sparkles, Trash2, X } from "lucide-react";
+import { ArrowLeft, Check, Loader2, Plus, Sparkles, Trash2, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { User } from "@supabase/supabase-js";
 import ThemeToggle from "@/components/ThemeToggle";
+import AddWeeklyFoodDialog from "@/components/AddWeeklyFoodDialog";
 
 interface FoodLog {
   id: string;
@@ -31,9 +32,11 @@ const WeeklyChallenge = () => {
   const [loading, setLoading] = useState(true);
   const [foodLogs, setFoodLogs] = useState<FoodLog[]>([]);
   const [selectedDay, setSelectedDay] = useState(1);
-  const [uploading, setUploading] = useState(false);
-  const [analyzing, setAnalyzing] = useState<string | null>(null);
   const [generatingDiet, setGeneratingDiet] = useState(false);
+  
+  // Dialog state
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogMealType, setDialogMealType] = useState("breakfast");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -60,127 +63,6 @@ const WeeklyChallenge = () => {
       console.error("Error fetching food logs:", error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleImageUpload = async (dayNumber: number, mealType: string, file: File) => {
-    if (!user) return;
-
-    setUploading(true);
-    try {
-      // Upload image to storage
-      const fileName = `${user.id}/${Date.now()}_${file.name}`;
-      const { error: uploadError } = await supabase.storage
-        .from("food-images")
-        .upload(fileName, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: urlData } = supabase.storage
-        .from("food-images")
-        .getPublicUrl(fileName);
-
-      // Insert food log entry
-      const { data: insertedLog, error: insertError } = await supabase
-        .from("weekly_food_log")
-        .insert({
-          user_id: user.id,
-          day_number: dayNumber,
-          meal_type: mealType.toLowerCase(),
-          image_url: urlData.publicUrl,
-        })
-        .select()
-        .single();
-
-      if (insertError) throw insertError;
-
-      setFoodLogs((prev) => [...prev, insertedLog]);
-
-      toast({
-        title: "Image uploaded",
-        description: "Now analyzing with AI...",
-      });
-
-      // Analyze with AI
-      await analyzeFood(insertedLog.id, urlData.publicUrl);
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      toast({
-        title: "Error",
-        description: "Failed to upload image",
-        variant: "destructive",
-      });
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const analyzeFood = async (logId: string, imageUrl: string) => {
-    setAnalyzing(logId);
-    try {
-      // Fetch image and convert to base64
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-      const base64 = await new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const result = reader.result as string;
-          resolve(result.split(",")[1]);
-        };
-        reader.readAsDataURL(blob);
-      });
-
-      const { data, error } = await supabase.functions.invoke("analyze-food", {
-        body: { imageBase64: base64 },
-      });
-
-      if (error) throw error;
-
-      // Update the food log with AI analysis
-      const { error: updateError } = await supabase
-        .from("weekly_food_log")
-        .update({
-          food_name: data.name,
-          calories: data.calories,
-          protein: data.protein,
-          carbs: data.carbs,
-          fat: data.fat,
-          ai_analysis: data,
-        })
-        .eq("id", logId);
-
-      if (updateError) throw updateError;
-
-      // Update local state
-      setFoodLogs((prev) =>
-        prev.map((log) =>
-          log.id === logId
-            ? {
-                ...log,
-                food_name: data.name,
-                calories: data.calories,
-                protein: data.protein,
-                carbs: data.carbs,
-                fat: data.fat,
-                ai_analysis: data,
-              }
-            : log
-        )
-      );
-
-      toast({
-        title: "Analysis complete",
-        description: `Detected: ${data.name} (${data.calories} cal)`,
-      });
-    } catch (error) {
-      console.error("Error analyzing food:", error);
-      toast({
-        title: "Analysis failed",
-        description: "Could not analyze the food image",
-        variant: "destructive",
-      });
-    } finally {
-      setAnalyzing(null);
     }
   };
 
@@ -227,7 +109,6 @@ const WeeklyChallenge = () => {
 
     setGeneratingDiet(true);
     try {
-      // Fetch health profile
       const { data: healthProfile, error: healthError } = await supabase
         .from("user_health_profiles")
         .select("*")
@@ -243,7 +124,6 @@ const WeeklyChallenge = () => {
         return;
       }
 
-      // Call edge function with both food logs and health profile
       const { data, error } = await supabase.functions.invoke("generate-diet", {
         body: { 
           healthProfile,
@@ -286,6 +166,15 @@ const WeeklyChallenge = () => {
     } catch (error) {
       console.error("Error clearing logs:", error);
     }
+  };
+
+  const openAddDialog = (mealType: string) => {
+    setDialogMealType(mealType.toLowerCase());
+    setDialogOpen(true);
+  };
+
+  const handleFoodAdded = (food: FoodLog) => {
+    setFoodLogs((prev) => [...prev, food]);
   };
 
   if (loading) {
@@ -358,7 +247,7 @@ const WeeklyChallenge = () => {
                 className="relative"
               >
                 {day}
-                {hasLogs && (
+                {hasLogs && selectedDay !== dayNum && (
                   <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full" />
                 )}
               </Button>
@@ -380,7 +269,17 @@ const WeeklyChallenge = () => {
             return (
               <Card key={mealType}>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base">{mealType}</CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-base">{mealType}</CardTitle>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => openAddDialog(mealType)}
+                    >
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   {logsForMeal.length > 0 ? (
@@ -388,7 +287,7 @@ const WeeklyChallenge = () => {
                       {logsForMeal.map((log) => (
                         <div
                           key={log.id}
-                          className="flex items-center gap-3 p-2 rounded-lg bg-muted/50"
+                          className="flex items-center gap-3 p-3 rounded-lg bg-muted/50"
                         >
                           {log.image_url && (
                             <img
@@ -398,27 +297,12 @@ const WeeklyChallenge = () => {
                             />
                           )}
                           <div className="flex-1 min-w-0">
-                            {analyzing === log.id ? (
-                              <div className="flex items-center gap-2">
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                                <span className="text-sm text-muted-foreground">
-                                  Analyzing...
-                                </span>
-                              </div>
-                            ) : log.food_name ? (
-                              <>
-                                <p className="font-medium text-foreground truncate">
-                                  {log.food_name}
-                                </p>
-                                <p className="text-sm text-muted-foreground">
-                                  {log.calories} cal • {log.protein}g P • {log.carbs}g C • {log.fat}g F
-                                </p>
-                              </>
-                            ) : (
-                              <p className="text-sm text-muted-foreground">
-                                Waiting for analysis...
-                              </p>
-                            )}
+                            <p className="font-medium text-foreground truncate">
+                              {log.food_name || "Unknown food"}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {log.calories || 0} cal • {log.protein || 0}g P • {log.carbs || 0}g C • {log.fat || 0}g F
+                            </p>
                           </div>
                           <Button
                             variant="ghost"
@@ -431,51 +315,15 @@ const WeeklyChallenge = () => {
                       ))}
                     </div>
                   ) : (
-                    <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary/50 transition-colors">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            handleImageUpload(selectedDay, mealType, file);
-                          }
-                        }}
-                        disabled={uploading}
-                      />
-                      {uploading ? (
-                        <Loader2 className="w-8 h-8 text-muted-foreground animate-spin" />
-                      ) : (
-                        <>
-                          <Camera className="w-8 h-8 text-muted-foreground mb-2" />
-                          <span className="text-sm text-muted-foreground">
-                            Add photo
-                          </span>
-                        </>
-                      )}
-                    </label>
-                  )}
-
-                  {logsForMeal.length > 0 && (
-                    <label className="mt-3 flex items-center justify-center p-3 border border-dashed border-border rounded-lg cursor-pointer hover:border-primary/50 transition-colors">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            handleImageUpload(selectedDay, mealType, file);
-                          }
-                        }}
-                        disabled={uploading}
-                      />
-                      <Camera className="w-4 h-4 text-muted-foreground mr-2" />
+                    <button
+                      onClick={() => openAddDialog(mealType)}
+                      className="w-full flex flex-col items-center justify-center p-6 border-2 border-dashed border-border rounded-lg hover:border-primary/50 hover:bg-muted/30 transition-colors"
+                    >
+                      <Plus className="w-8 h-8 text-muted-foreground mb-2" />
                       <span className="text-sm text-muted-foreground">
-                        Add another
+                        Add {mealType}
                       </span>
-                    </label>
+                    </button>
                   )}
                 </CardContent>
               </Card>
@@ -517,6 +365,18 @@ const WeeklyChallenge = () => {
           )}
         </Button>
       </div>
+
+      {/* Add Food Dialog */}
+      {user && (
+        <AddWeeklyFoodDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          userId={user.id}
+          dayNumber={selectedDay}
+          defaultMealType={dialogMealType}
+          onFoodAdded={handleFoodAdded}
+        />
+      )}
     </div>
   );
 };
