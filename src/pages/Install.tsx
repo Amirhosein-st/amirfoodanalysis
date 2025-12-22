@@ -73,9 +73,9 @@ const Install = () => {
         {/* App Preview */}
         <div className="text-center">
           <div className="w-24 h-24 rounded-2xl bg-primary/10 mx-auto mb-4 flex items-center justify-center overflow-hidden">
-            <img src="/pwa-192x192.png" alt="NutriTrack" className="w-full h-full object-cover" />
+            <img src="/pwa-192x192.png" alt="Rima Food Tracker" className="w-full h-full object-cover" />
           </div>
-          <h2 className="text-2xl font-bold text-foreground">NutriTrack</h2>
+          <h2 className="text-2xl font-bold text-foreground">Rima Food Tracker</h2>
           <p className="text-muted-foreground">Calorie & Diet Tracker</p>
         </div>
 
@@ -87,7 +87,7 @@ const Install = () => {
               </div>
               <h3 className="font-semibold text-foreground mb-2">App Installed!</h3>
               <p className="text-sm text-muted-foreground">
-                NutriTrack is installed on your device. You can find it on your home screen.
+                Rima Food Tracker is installed on your device. You can find it on your home screen.
               </p>
             </CardContent>
           </Card>
@@ -99,7 +99,7 @@ const Install = () => {
                 Install on iPhone/iPad
               </CardTitle>
               <CardDescription>
-                Follow these steps to add NutriTrack to your home screen
+                Follow these steps to add Rima to your home screen
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -134,7 +134,7 @@ const Install = () => {
                 <div>
                   <p className="font-medium text-foreground">3. Tap "Add"</p>
                   <p className="text-sm text-muted-foreground">
-                    Confirm to add NutriTrack to your home screen
+                    Confirm to add Rima to your home screen
                   </p>
                 </div>
               </div>
@@ -145,7 +145,7 @@ const Install = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Download className="w-5 h-5 text-primary" />
-                Install NutriTrack
+                Install Rima Food Tracker
               </CardTitle>
               <CardDescription>
                 Add to your home screen for quick access
@@ -177,7 +177,7 @@ const Install = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Smartphone className="w-5 h-5 text-primary" />
-                Install NutriTrack
+                Install Rima Food Tracker
               </CardTitle>
               <CardDescription>
                 Add to your home screen for the best experience
