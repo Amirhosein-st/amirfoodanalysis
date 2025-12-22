@@ -121,7 +121,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="p-4 flex items-center justify-between">
+      <header className="p-4 flex items-center justify-between safe-area-top">
         <h1 className="text-xl font-bold text-foreground">Rima Food Tracker</h1>
         <ThemeToggle />
       </header>
