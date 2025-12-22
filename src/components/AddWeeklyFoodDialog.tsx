@@ -325,21 +325,20 @@ const AddWeeklyFoodDialog = ({
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="calories" className="text-foreground">Calories</Label>
-              <Input
-                id="calories"
-                type="number"
-                min={0}
-                value={formData.calories}
-                onChange={(e) =>
-                  setFormData({ ...formData, calories: parseInt(e.target.value) || 0 })
-                }
-                className="bg-background border-border"
-              />
-            </div>
-
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="calories" className="text-foreground">Calories</Label>
+                <Input
+                  id="calories"
+                  type="number"
+                  min={0}
+                  value={formData.calories}
+                  onChange={(e) =>
+                    setFormData({ ...formData, calories: parseInt(e.target.value) || 0 })
+                  }
+                  className="bg-background border-border"
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="protein" className="text-foreground">Protein (g)</Label>
                 <Input
@@ -353,6 +352,9 @@ const AddWeeklyFoodDialog = ({
                   className="bg-background border-border"
                 />
               </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="carbs" className="text-foreground">Carbs (g)</Label>
                 <Input
