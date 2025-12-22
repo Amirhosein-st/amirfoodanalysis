@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,6 +50,16 @@ const AddWeeklyFoodDialog = ({
     carbs: 0,
     fat: 0,
   });
+
+  // Update mealType when dialog opens with a new defaultMealType
+  useEffect(() => {
+    if (open) {
+      setFormData(prev => ({
+        ...prev,
+        mealType: defaultMealType,
+      }));
+    }
+  }, [open, defaultMealType]);
 
   const resetForm = () => {
     setFormData({
@@ -105,18 +115,20 @@ const AddWeeklyFoodDialog = ({
 
       if (error) throw error;
 
-      setFormData({
-        foodName: data.name || "",
+      const foodName = data.food_name || data.name || "";
+      
+      setFormData(prev => ({
+        ...prev,
+        foodName: foodName,
         calories: data.calories || 0,
-        mealType: formData.mealType,
         protein: data.protein || 0,
         carbs: data.carbs || 0,
         fat: data.fat || 0,
-      });
+      }));
 
       toast({
         title: "Analysis complete",
-        description: `Detected: ${data.name}`,
+        description: `Detected: ${foodName}`,
       });
     } catch (error) {
       console.error("Error analyzing image:", error);
