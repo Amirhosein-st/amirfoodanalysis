@@ -3,9 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Utensils, Clock, Flame } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useTranslation } from "react-i18next";
 
 interface Meal {
   name: string;
@@ -25,13 +23,12 @@ const Diet = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const diet = location.state?.diet as DietPlan | undefined;
-  const { t } = useTranslation();
 
   if (!diet) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-        <p className="text-muted-foreground mb-4">{t("diet.noPlan")}</p>
-        <Button onClick={() => navigate("/")}>{t("common.back")}</Button>
+        <p className="text-muted-foreground mb-4">No diet plan available</p>
+        <Button onClick={() => navigate("/")}>Go Back</Button>
       </div>
     );
   }
@@ -43,12 +40,9 @@ const Diet = () => {
           <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <h1 className="text-xl font-bold text-foreground">{t("diet.title")}</h1>
+          <h1 className="text-xl font-bold text-foreground">Your Diet Plan</h1>
         </div>
-        <div className="flex items-center gap-2">
-          <LanguageSwitcher />
-          <ThemeToggle />
-        </div>
+        <ThemeToggle />
       </header>
 
       <ScrollArea className="h-[calc(100vh-80px)]">
@@ -62,13 +56,13 @@ const Diet = () => {
                   {diet.totalCalories}
                 </span>
               </div>
-              <p className="text-muted-foreground">{t("diet.dailyCalories")}</p>
+              <p className="text-muted-foreground">Daily Calories Target</p>
             </CardContent>
           </Card>
 
           {/* Meals */}
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-foreground">{t("diet.dailyMeals")}</h2>
+            <h2 className="text-lg font-semibold text-foreground">Daily Meals</h2>
             {diet.meals.map((meal, index) => (
               <Card key={index}>
                 <CardHeader className="pb-2">
@@ -81,13 +75,13 @@ const Diet = () => {
                         <CardTitle className="text-base">{meal.name}</CardTitle>
                         <div className="flex items-center gap-1 text-sm text-muted-foreground">
                           <Clock className="w-3 h-3" />
-                          {t("diet.bestTime")}: {meal.time}
+                          Best time to eat: {meal.time}
                         </div>
                       </div>
                     </div>
-                    <div className="text-end">
+                    <div className="text-right">
                       <span className="text-lg font-bold text-primary">{meal.calories}</span>
-                      <p className="text-xs text-muted-foreground">{t("common.kcal")}</p>
+                      <p className="text-xs text-muted-foreground">kcal</p>
                     </div>
                   </div>
                 </CardHeader>
@@ -111,19 +105,29 @@ const Diet = () => {
           {/* Tips */}
           {diet.tips && diet.tips.length > 0 && (
             <div className="space-y-3">
-              <h2 className="text-lg font-semibold text-foreground">{t("diet.tips")}</h2>
-              <div className="space-y-2">
-                {diet.tips.map((tip, index) => (
-                  <div
-                    key={index}
-                    className="p-3 rounded-lg bg-muted/50 text-sm text-muted-foreground"
-                  >
-                    💡 {tip}
-                  </div>
-                ))}
-              </div>
+              <h2 className="text-lg font-semibold text-foreground">Tips for Success</h2>
+              <Card>
+                <CardContent className="p-4">
+                  <ul className="space-y-2">
+                    {diet.tips.map((tip, index) => (
+                      <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
+                        <span className="text-primary">•</span>
+                        {tip}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
             </div>
           )}
+
+          <Button 
+            className="w-full" 
+            variant="outline"
+            onClick={() => navigate("/tracker")}
+          >
+            Start Tracking Your Meals
+          </Button>
         </main>
       </ScrollArea>
     </div>
