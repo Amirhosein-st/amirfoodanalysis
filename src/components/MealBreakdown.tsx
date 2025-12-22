@@ -1,4 +1,4 @@
-import { Coffee, Sun, Moon, Cookie } from "lucide-react";
+import { getMealTypesForCount } from "@/lib/mealTypes";
 
 interface MealCalories {
   breakfast: number;
@@ -9,20 +9,16 @@ interface MealCalories {
 
 interface MealBreakdownProps {
   mealCalories: MealCalories;
+  mealsPerDay: number;
 }
 
-const mealConfig = [
-  { key: "breakfast", label: "Breakfast", icon: Coffee, color: "text-accent" },
-  { key: "lunch", label: "Lunch", icon: Sun, color: "text-primary" },
-  { key: "dinner", label: "Dinner", icon: Moon, color: "text-primary" },
-  { key: "snack", label: "Snack", icon: Cookie, color: "text-muted-foreground" },
-] as const;
+const MealBreakdown = ({ mealCalories, mealsPerDay }: MealBreakdownProps) => {
+  const mealConfig = getMealTypesForCount(mealsPerDay);
 
-const MealBreakdown = ({ mealCalories }: MealBreakdownProps) => {
   return (
     <div className="bg-card rounded-2xl shadow-soft p-4 animate-slide-up" style={{ animationDelay: "0.1s" }}>
       <h3 className="text-sm font-medium text-muted-foreground mb-3">Calories by Meal</h3>
-      <div className="grid grid-cols-4 gap-2">
+      <div className={`grid gap-2 ${mealConfig.length === 2 ? 'grid-cols-2' : mealConfig.length === 3 ? 'grid-cols-3' : 'grid-cols-4'}`}>
         {mealConfig.map(({ key, label, icon: Icon, color }) => (
           <div
             key={key}
@@ -30,7 +26,7 @@ const MealBreakdown = ({ mealCalories }: MealBreakdownProps) => {
           >
             <Icon className={`w-4 h-4 ${color} mx-auto mb-1`} />
             <p className="text-lg font-semibold text-foreground">
-              {mealCalories[key]}
+              {mealCalories[key as keyof MealCalories]}
             </p>
             <p className="text-xs text-muted-foreground">{label}</p>
           </div>

@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { User } from "@supabase/supabase-js";
 import ThemeToggle from "@/components/ThemeToggle";
 import AddWeeklyFoodDialog from "@/components/AddWeeklyFoodDialog";
+import { getMealTypeLabels } from "@/lib/mealTypes";
 
 interface FoodLog {
   id: string;
@@ -23,7 +24,6 @@ interface FoodLog {
 }
 
 const DAYS = ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6", "Day 7"];
-const MEAL_TYPES = ["Breakfast", "Lunch", "Dinner", "Snack"];
 
 const WeeklyChallenge = () => {
   const navigate = useNavigate();
@@ -33,6 +33,7 @@ const WeeklyChallenge = () => {
   const [foodLogs, setFoodLogs] = useState<FoodLog[]>([]);
   const [selectedDay, setSelectedDay] = useState(1);
   const [generatingDiet, setGeneratingDiet] = useState(false);
+  const [mealsPerDay, setMealsPerDay] = useState<number>(4);
   
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -46,8 +47,21 @@ const WeeklyChallenge = () => {
       }
       setUser(session.user);
       fetchFoodLogs(session.user.id);
+      fetchHealthProfile(session.user.id);
     });
   }, [navigate]);
+
+  const fetchHealthProfile = async (userId: string) => {
+    const { data, error } = await supabase
+      .from("user_health_profiles")
+      .select("meals_per_day")
+      .eq("user_id", userId)
+      .single();
+
+    if (!error && data) {
+      setMealsPerDay(data.meals_per_day || 4);
+    }
+  };
 
   const fetchFoodLogs = async (userId: string) => {
     try {
@@ -285,7 +299,7 @@ const WeeklyChallenge = () => {
             {DAYS[selectedDay - 1]} Meals
           </h2>
 
-          {MEAL_TYPES.map((mealType) => {
+          {getMealTypeLabels(mealsPerDay).map((mealType) => {
             const logsForMeal = getLogsForDay(selectedDay).filter(
               (log) => log.meal_type === mealType.toLowerCase()
             );
@@ -399,6 +413,7 @@ const WeeklyChallenge = () => {
           dayNumber={selectedDay}
           defaultMealType={dialogMealType}
           onFoodAdded={handleFoodAdded}
+          mealsPerDay={mealsPerDay}
         />
       )}
     </div>

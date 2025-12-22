@@ -9,6 +9,7 @@ import AddFoodDialog from "@/components/AddFoodDialog";
 import ThemeToggle from "@/components/ThemeToggle";
 import MealBreakdown from "@/components/MealBreakdown";
 import { User, Session } from "@supabase/supabase-js";
+import { getMealTypeKeys } from "@/lib/mealTypes";
 
 interface FoodEntry {
   id: string;
@@ -27,12 +28,17 @@ interface Profile {
   onboarding_completed: boolean | null;
 }
 
+interface HealthProfile {
+  meals_per_day: number | null;
+}
+
 const Index = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [foodEntries, setFoodEntries] = useState<FoodEntry[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [healthProfile, setHealthProfile] = useState<HealthProfile | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -92,10 +98,25 @@ const Index = () => {
     }
   };
 
+  const fetchHealthProfile = async () => {
+    if (!user) return;
+    
+    const { data, error } = await supabase
+      .from("user_health_profiles")
+      .select("meals_per_day")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!error && data) {
+      setHealthProfile(data);
+    }
+  };
+
   useEffect(() => {
     if (user) {
       fetchFoodEntries();
       fetchProfile();
+      fetchHealthProfile();
     }
   }, [user]);
 
@@ -124,6 +145,10 @@ const Index = () => {
   const totalCarbs = foodEntries.reduce((sum, entry) => sum + (entry.carbs || 0), 0);
   const totalFat = foodEntries.reduce((sum, entry) => sum + (entry.fat || 0), 0);
   const goalCalories = profile?.daily_calorie_goal || 2000;
+
+  // Get meal types based on user's meals_per_day setting
+  const mealsPerDay = healthProfile?.meals_per_day || 4;
+  const activeMealTypes = getMealTypeKeys(mealsPerDay);
 
   // Calculate calories per meal type
   const mealCalories = {
@@ -171,7 +196,7 @@ const Index = () => {
           fat={totalFat}
         />
 
-        <MealBreakdown mealCalories={mealCalories} />
+        <MealBreakdown mealCalories={mealCalories} mealsPerDay={mealsPerDay} />
 
         {/* Today's Entries */}
         <div className="animate-slide-up" style={{ animationDelay: "0.2s" }}>
@@ -206,7 +231,7 @@ const Index = () => {
 
       {/* Floating Action Button */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2">
-        <AddFoodDialog onFoodAdded={fetchFoodEntries} />
+        <AddFoodDialog onFoodAdded={fetchFoodEntries} mealsPerDay={mealsPerDay} />
       </div>
     </div>
   );
