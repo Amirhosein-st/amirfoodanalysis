@@ -46,6 +46,7 @@ const AddFoodDialog = ({ onFoodAdded }: AddFoodDialogProps) => {
   const [mealType, setMealType] = useState("snack");
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [analysisNotes, setAnalysisNotes] = useState<string | null>(null);
+  const [isAnalyzed, setIsAnalyzed] = useState(false);
   const { toast } = useToast();
   
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -60,6 +61,7 @@ const AddFoodDialog = ({ onFoodAdded }: AddFoodDialogProps) => {
     setMealType("snack");
     setPreviewImage(null);
     setAnalysisNotes(null);
+    setIsAnalyzed(false);
   };
 
   const handleImageSelect = async (file: File) => {
@@ -111,6 +113,7 @@ const AddFoodDialog = ({ onFoodAdded }: AddFoodDialogProps) => {
       setProtein(data.protein?.toString() || "");
       setCarbs(data.carbs?.toString() || "");
       setFat(data.fat?.toString() || "");
+      setIsAnalyzed(true);
       
       if (data.notes) {
         setAnalysisNotes(data.notes);
@@ -306,6 +309,8 @@ const AddFoodDialog = ({ onFoodAdded }: AddFoodDialogProps) => {
                 value={calories}
                 onChange={(e) => setCalories(e.target.value)}
                 required
+                readOnly={isAnalyzed}
+                className={isAnalyzed ? "bg-muted cursor-not-allowed" : ""}
               />
             </div>
             <div className="space-y-2">
@@ -333,6 +338,8 @@ const AddFoodDialog = ({ onFoodAdded }: AddFoodDialogProps) => {
                 placeholder="0"
                 value={protein}
                 onChange={(e) => setProtein(e.target.value)}
+                readOnly={isAnalyzed}
+                className={isAnalyzed ? "bg-muted cursor-not-allowed" : ""}
               />
             </div>
             <div className="space-y-2">
@@ -343,6 +350,8 @@ const AddFoodDialog = ({ onFoodAdded }: AddFoodDialogProps) => {
                 placeholder="0"
                 value={carbs}
                 onChange={(e) => setCarbs(e.target.value)}
+                readOnly={isAnalyzed}
+                className={isAnalyzed ? "bg-muted cursor-not-allowed" : ""}
               />
             </div>
             <div className="space-y-2">
@@ -353,6 +362,8 @@ const AddFoodDialog = ({ onFoodAdded }: AddFoodDialogProps) => {
                 placeholder="0"
                 value={fat}
                 onChange={(e) => setFat(e.target.value)}
+                readOnly={isAnalyzed}
+                className={isAnalyzed ? "bg-muted cursor-not-allowed" : ""}
               />
             </div>
           </div>
