@@ -625,7 +625,7 @@ const Onboarding = () => {
               <Leaf className="w-5 h-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="font-semibold text-foreground">NutriTrack</h1>
+              <h1 className="font-semibold text-foreground">Rima Food Tracker</h1>
               <p className="text-xs text-muted-foreground">Let's personalize your experience</p>
             </div>
           </div>
