@@ -6,16 +6,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, User, Target, Save, Loader2 } from "lucide-react";
+import { ArrowLeft, User, Save, Loader2, Mail, Scale, Ruler, Calendar, Users } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { User as SupabaseUser } from "@supabase/supabase-js";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Profile = () => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [fullName, setFullName] = useState("");
-  const [calorieGoal, setCalorieGoal] = useState("");
+  const [username, setUsername] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [usernameSet, setUsernameSet] = useState(false);
+  const [avatarSet, setAvatarSet] = useState(false);
+  const [healthProfile, setHealthProfile] = useState<{
+    weight: number | null;
+    height: number | null;
+    age: number | null;
+    gender: string | null;
+  }>({ weight: null, height: null, age: null, gender: null });
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -41,23 +50,42 @@ const Profile = () => {
   }, [navigate]);
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchData = async () => {
       if (!user) return;
 
-      const { data, error } = await supabase
+      // Fetch profile data
+      const { data: profileData } = await supabase
         .from("profiles")
-        .select("full_name, daily_calorie_goal")
+        .select("username, avatar_url, username_set, avatar_set")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
-      if (!error && data) {
-        setFullName(data.full_name || "");
-        setCalorieGoal(data.daily_calorie_goal?.toString() || "2000");
+      if (profileData) {
+        setUsername(profileData.username || "");
+        setAvatarUrl(profileData.avatar_url || "");
+        setUsernameSet(profileData.username_set || false);
+        setAvatarSet(profileData.avatar_set || false);
+      }
+
+      // Fetch health profile data
+      const { data: healthData } = await supabase
+        .from("user_health_profiles")
+        .select("weight, height, age, gender")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (healthData) {
+        setHealthProfile({
+          weight: healthData.weight,
+          height: healthData.height,
+          age: healthData.age,
+          gender: healthData.gender,
+        });
       }
     };
 
     if (user) {
-      fetchProfile();
+      fetchData();
     }
   }, [user]);
 
@@ -66,29 +94,60 @@ const Profile = () => {
     setSaving(true);
 
     try {
+      const updates: Record<string, unknown> = {};
+      
+      // Only update username if not already set
+      if (!usernameSet && username.trim()) {
+        updates.username = username.trim();
+        updates.username_set = true;
+      }
+      
+      // Only update avatar if not already set
+      if (!avatarSet && avatarUrl.trim()) {
+        updates.avatar_url = avatarUrl.trim();
+        updates.avatar_set = true;
+      }
+
+      if (Object.keys(updates).length === 0) {
+        toast({
+          title: "No changes",
+          description: "No editable fields to update.",
+        });
+        setSaving(false);
+        return;
+      }
+
       const { error } = await supabase
         .from("profiles")
-        .update({
-          full_name: fullName,
-          daily_calorie_goal: parseInt(calorieGoal) || 2000,
-        })
+        .update(updates)
         .eq("user_id", user.id);
 
       if (error) throw error;
+
+      // Update local state
+      if (updates.username_set) setUsernameSet(true);
+      if (updates.avatar_set) setAvatarSet(true);
 
       toast({
         title: "Profile updated",
         description: "Your changes have been saved.",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to update profile";
       toast({
         title: "Error",
-        description: error.message || "Failed to update profile",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
       setSaving(false);
     }
+  };
+
+  const getInitials = () => {
+    if (username) return username.charAt(0).toUpperCase();
+    if (user?.email) return user.email.charAt(0).toUpperCase();
+    return "U";
   };
 
   if (loading) {
@@ -108,6 +167,7 @@ const Profile = () => {
             <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
+            <User className="w-5 h-5 text-primary" />
             <h1 className="font-semibold text-foreground">Profile Settings</h1>
           </div>
           <ThemeToggle />
@@ -116,11 +176,48 @@ const Profile = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6 space-y-6 max-w-md">
+        {/* Avatar Section */}
         <Card className="shadow-soft animate-slide-up">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <User className="w-5 h-5 text-primary" />
-              Personal Information
+              Profile Picture
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col items-center gap-4">
+              <Avatar className="w-24 h-24">
+                <AvatarImage src={avatarUrl} alt="Profile" />
+                <AvatarFallback className="text-2xl bg-primary/10 text-primary">
+                  {getInitials()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="w-full space-y-2">
+                <Label htmlFor="avatarUrl">Avatar URL</Label>
+                <Input
+                  id="avatarUrl"
+                  placeholder="https://example.com/avatar.jpg"
+                  value={avatarUrl}
+                  onChange={(e) => setAvatarUrl(e.target.value)}
+                  disabled={avatarSet}
+                  className={avatarSet ? "bg-muted cursor-not-allowed" : ""}
+                />
+                {avatarSet && (
+                  <p className="text-xs text-muted-foreground">
+                    Avatar can only be set once
+                  </p>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Account Information */}
+        <Card className="shadow-soft animate-slide-up" style={{ animationDelay: "0.1s" }}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Mail className="w-5 h-5 text-primary" />
+              Account Information
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -134,42 +231,88 @@ const Profile = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="fullName">Full Name</Label>
+              <Label htmlFor="username">Username</Label>
               <Input
-                id="fullName"
-                placeholder="Your name"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                id="username"
+                placeholder="Choose a username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                disabled={usernameSet}
+                className={usernameSet ? "bg-muted cursor-not-allowed" : ""}
               />
+              {usernameSet && (
+                <p className="text-xs text-muted-foreground">
+                  Username can only be set once
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
 
-        <Card className="shadow-soft animate-slide-up" style={{ animationDelay: "0.1s" }}>
+        {/* Health Information */}
+        <Card className="shadow-soft animate-slide-up" style={{ animationDelay: "0.2s" }}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Target className="w-5 h-5 text-primary" />
-              Nutrition Goals
+              <Scale className="w-5 h-5 text-primary" />
+              Health Information
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="calorieGoal">Daily Calorie Goal</Label>
-              <Input
-                id="calorieGoal"
-                type="number"
-                placeholder="2000"
-                value={calorieGoal}
-                onChange={(e) => setCalorieGoal(e.target.value)}
-              />
-              <p className="text-xs text-muted-foreground">
-                Recommended: 1500-2500 calories per day based on activity level
-              </p>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="weight" className="flex items-center gap-1">
+                  <Scale className="w-3 h-3" />
+                  Weight
+                </Label>
+                <Input
+                  id="weight"
+                  value={healthProfile.weight ? `${healthProfile.weight} kg` : "Not set"}
+                  readOnly
+                  className="bg-muted cursor-not-allowed"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="height" className="flex items-center gap-1">
+                  <Ruler className="w-3 h-3" />
+                  Height
+                </Label>
+                <Input
+                  id="height"
+                  value={healthProfile.height ? `${healthProfile.height} cm` : "Not set"}
+                  readOnly
+                  className="bg-muted cursor-not-allowed"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="age" className="flex items-center gap-1">
+                  <Calendar className="w-3 h-3" />
+                  Age
+                </Label>
+                <Input
+                  id="age"
+                  value={healthProfile.age ? `${healthProfile.age} years` : "Not set"}
+                  readOnly
+                  className="bg-muted cursor-not-allowed"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="gender" className="flex items-center gap-1">
+                  <Users className="w-3 h-3" />
+                  Gender
+                </Label>
+                <Input
+                  id="gender"
+                  value={healthProfile.gender ? healthProfile.gender.charAt(0).toUpperCase() + healthProfile.gender.slice(1) : "Not set"}
+                  readOnly
+                  className="bg-muted cursor-not-allowed"
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="shadow-soft animate-slide-up" style={{ animationDelay: "0.2s" }}>
+        {/* Appearance */}
+        <Card className="shadow-soft animate-slide-up" style={{ animationDelay: "0.3s" }}>
           <CardHeader>
             <CardTitle>Appearance</CardTitle>
           </CardHeader>
@@ -184,24 +327,26 @@ const Profile = () => {
           </CardContent>
         </Card>
 
-        <Button
-          variant="hero"
-          className="w-full gap-2"
-          onClick={handleSave}
-          disabled={saving}
-        >
-          {saving ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            <>
-              <Save className="w-4 h-4" />
-              Save Changes
-            </>
-          )}
-        </Button>
+        {(!usernameSet || !avatarSet) && (
+          <Button
+            variant="hero"
+            className="w-full gap-2"
+            onClick={handleSave}
+            disabled={saving}
+          >
+            {saving ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                Save Changes
+              </>
+            )}
+          </Button>
+        )}
       </main>
     </div>
   );
