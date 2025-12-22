@@ -27,11 +27,17 @@ serve(async (req) => {
       1. Takes into account their current eating patterns and preferences
       2. Gradually improves their diet while respecting their tastes
       3. Considers their health goals and profile
+      4. PRIORITIZES foods from their cultural background/nationality - suggest traditional and popular dishes from their cuisine
       
       IMPORTANT CALORIE DISTRIBUTION: 
       - Breakfast and Lunch should have MORE calories than Dinner and Snack
       - Recommended distribution: Breakfast ~30%, Lunch ~35%, Dinner ~25%, Snack ~10%
       - Front-load calories earlier in the day for better metabolism and energy
+      
+      CULTURAL FOOD FOCUS:
+      - Suggest meals that are common and traditional in the user's nationality/culture
+      - Adapt healthy eating to their cultural food preferences
+      - Include authentic dishes with healthy modifications when needed
       
       IMPORTANT: You must respond with ONLY a valid JSON object, no markdown, no code blocks, just pure JSON.
       
@@ -81,6 +87,7 @@ serve(async (req) => {
       userPrompt = `Create a highly personalized diet plan based on this user's profile and their actual eating habits over 7 days:
 
 User Profile:
+- Nationality: ${healthProfile.nationality || "Not specified"} (IMPORTANT: Suggest traditional and popular foods from this culture!)
 - Gender: ${healthProfile.gender}
 - Age: ${healthProfile.age} years
 - Weight: ${healthProfile.weight} kg
@@ -99,7 +106,7 @@ User Profile:
 
 ${foodLogSummary}
 
-Analyze their eating patterns and create a personalized diet that builds on what they already eat while helping them reach their goals.`;
+Analyze their eating patterns and create a personalized diet that builds on what they already eat while helping them reach their goals. PRIORITIZE foods from their ${healthProfile.nationality || "cultural"} cuisine.`;
 
     } else {
       // Standard diet based on health profile only
@@ -111,6 +118,12 @@ Analyze their eating patterns and create a personalized diet that builds on what
       - For 3 meals: Breakfast ~35%, Lunch ~40%, Dinner ~25%
       - For 2 meals: Breakfast ~55%, Dinner ~45%
       - Front-load calories earlier in the day for better metabolism and energy
+      
+      CULTURAL FOOD FOCUS:
+      - PRIORITIZE foods from the user's nationality/cultural background
+      - Suggest traditional and popular dishes from their cuisine
+      - Adapt healthy eating to their cultural food preferences
+      - Include authentic dishes with healthy modifications when needed
       
       IMPORTANT: You must respond with ONLY a valid JSON object, no markdown, no code blocks, just pure JSON.
       
@@ -130,6 +143,7 @@ Analyze their eating patterns and create a personalized diet that builds on what
       }
       
       Consider:
+      - User's nationality and cultural food preferences (MOST IMPORTANT)
       - User's goal (weight loss, muscle gain, maintenance)
       - Activity level
       - Diet preferences
@@ -138,6 +152,7 @@ Analyze their eating patterns and create a personalized diet that builds on what
       - Number of meals per day they prefer`;
 
       userPrompt = `Create a personalized diet plan for this user:
+      - Nationality: ${healthProfile.nationality || "Not specified"} (IMPORTANT: Suggest traditional and popular foods from this culture!)
       - Gender: ${healthProfile.gender}
       - Age: ${healthProfile.age} years
       - Weight: ${healthProfile.weight} kg
@@ -152,7 +167,9 @@ Analyze their eating patterns and create a personalized diet that builds on what
       - Food Allergies: ${healthProfile.food_allergies?.join(", ") || "None"}
       - Medical Conditions: ${healthProfile.medical_conditions?.join(", ") || "None"}
       - Liked Foods: ${healthProfile.liked_foods?.join(", ") || "No preferences"}
-      - Disliked Foods: ${healthProfile.disliked_foods?.join(", ") || "No preferences"}`;
+      - Disliked Foods: ${healthProfile.disliked_foods?.join(", ") || "No preferences"}
+      
+Make sure to suggest foods that are traditional and commonly eaten in ${healthProfile.nationality || "the user's"} cuisine while keeping them healthy and aligned with their goals.`;
     }
 
     console.log("Generating diet with prompt:", { isPersonalized, hasWeeklyLogs: !!weeklyFoodLogs });
