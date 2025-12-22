@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Utensils } from "lucide-react";
+import { Plus, Utensils, Camera, Upload, Sparkles, Loader2 } from "lucide-react";
 import { z } from "zod";
 
 const foodSchema = z.object({
@@ -37,13 +37,19 @@ interface AddFoodDialogProps {
 const AddFoodDialog = ({ onFoodAdded }: AddFoodDialogProps) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
   const [foodName, setFoodName] = useState("");
   const [calories, setCalories] = useState("");
   const [protein, setProtein] = useState("");
   const [carbs, setCarbs] = useState("");
   const [fat, setFat] = useState("");
   const [mealType, setMealType] = useState("snack");
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [analysisNotes, setAnalysisNotes] = useState<string | null>(null);
   const { toast } = useToast();
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const resetForm = () => {
     setFoodName("");
@@ -52,6 +58,77 @@ const AddFoodDialog = ({ onFoodAdded }: AddFoodDialogProps) => {
     setCarbs("");
     setFat("");
     setMealType("snack");
+    setPreviewImage(null);
+    setAnalysisNotes(null);
+  };
+
+  const handleImageSelect = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast({
+        title: "Invalid file",
+        description: "Please select an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Show preview
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const base64 = e.target?.result as string;
+      setPreviewImage(base64);
+      await analyzeFood(base64);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const analyzeFood = async (imageBase64: string) => {
+    setAnalyzing(true);
+    setAnalysisNotes(null);
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-food`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ imageBase64 }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to analyze image");
+      }
+
+      // Auto-fill the form with analyzed data
+      setFoodName(data.food_name || "");
+      setCalories(data.calories?.toString() || "");
+      setProtein(data.protein?.toString() || "");
+      setCarbs(data.carbs?.toString() || "");
+      setFat(data.fat?.toString() || "");
+      
+      if (data.notes) {
+        setAnalysisNotes(data.notes);
+      }
+
+      toast({
+        title: "Food analyzed!",
+        description: `Identified: ${data.food_name} (${data.confidence} confidence)`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Analysis failed",
+        description: error.message || "Could not analyze the image. Please enter manually.",
+        variant: "destructive",
+      });
+    } finally {
+      setAnalyzing(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -98,21 +175,116 @@ const AddFoodDialog = ({ onFoodAdded }: AddFoodDialogProps) => {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(isOpen) => {
+      setOpen(isOpen);
+      if (!isOpen) resetForm();
+    }}>
       <DialogTrigger asChild>
         <Button variant="hero" size="lg" className="gap-2">
           <Plus className="w-5 h-5" />
           Add Food
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Utensils className="w-5 h-5 text-primary" />
             Add Food Entry
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+
+        {/* Image Upload Section */}
+        <div className="space-y-3 mt-4">
+          <Label className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-primary" />
+            AI Food Analysis
+          </Label>
+          
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1 gap-2"
+              onClick={() => cameraInputRef.current?.click()}
+              disabled={analyzing}
+            >
+              <Camera className="w-4 h-4" />
+              Take Photo
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1 gap-2"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={analyzing}
+            >
+              <Upload className="w-4 h-4" />
+              Upload
+            </Button>
+          </div>
+
+          <input
+            ref={cameraInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleImageSelect(file);
+              e.target.value = "";
+            }}
+          />
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleImageSelect(file);
+              e.target.value = "";
+            }}
+          />
+
+          {/* Image Preview */}
+          {previewImage && (
+            <div className="relative rounded-lg overflow-hidden border border-border">
+              <img
+                src={previewImage}
+                alt="Food preview"
+                className="w-full h-40 object-cover"
+              />
+              {analyzing && (
+                <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
+                  <div className="flex items-center gap-2 text-primary">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span className="font-medium">Analyzing...</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {analysisNotes && (
+            <p className="text-sm text-muted-foreground bg-muted/50 p-2 rounded-md">
+              {analysisNotes}
+            </p>
+          )}
+        </div>
+
+        <div className="relative my-4">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">
+              or enter manually
+            </span>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="foodName">Food Name</Label>
             <Input
@@ -185,7 +357,7 @@ const AddFoodDialog = ({ onFoodAdded }: AddFoodDialogProps) => {
             </div>
           </div>
 
-          <Button type="submit" variant="hero" className="w-full" disabled={loading}>
+          <Button type="submit" variant="hero" className="w-full" disabled={loading || analyzing}>
             {loading ? "Adding..." : "Add Food Entry"}
           </Button>
         </form>
