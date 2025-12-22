@@ -44,11 +44,11 @@ const AddWeeklyFoodDialog = ({
 
   const [formData, setFormData] = useState({
     foodName: "",
-    calories: 0,
+    calories: "",
     mealType: defaultMealType,
-    protein: 0,
-    carbs: 0,
-    fat: 0,
+    protein: "",
+    carbs: "",
+    fat: "",
   });
 
   // Update mealType when dialog opens with a new defaultMealType
@@ -64,11 +64,11 @@ const AddWeeklyFoodDialog = ({
   const resetForm = () => {
     setFormData({
       foodName: "",
-      calories: 0,
+      calories: "",
       mealType: defaultMealType,
-      protein: 0,
-      carbs: 0,
-      fat: 0,
+      protein: "",
+      carbs: "",
+      fat: "",
     });
     setImagePreview(null);
     setImageFile(null);
@@ -120,10 +120,10 @@ const AddWeeklyFoodDialog = ({
       setFormData(prev => ({
         ...prev,
         foodName: foodName,
-        calories: data.calories || 0,
-        protein: data.protein || 0,
-        carbs: data.carbs || 0,
-        fat: data.fat || 0,
+        calories: String(data.calories || 0),
+        protein: String(data.protein || 0),
+        carbs: String(data.carbs || 0),
+        fat: String(data.fat || 0),
       }));
 
       toast({
@@ -180,10 +180,10 @@ const AddWeeklyFoodDialog = ({
           day_number: dayNumber,
           meal_type: formData.mealType,
           food_name: formData.foodName,
-          calories: formData.calories,
-          protein: formData.protein,
-          carbs: formData.carbs,
-          fat: formData.fat,
+          calories: parseInt(formData.calories) || 0,
+          protein: parseFloat(formData.protein) || 0,
+          carbs: parseFloat(formData.carbs) || 0,
+          fat: parseFloat(formData.fat) || 0,
           image_url: imageUrl,
           ai_analysis: imageFile ? { analyzed: true } : null,
         })
@@ -334,7 +334,7 @@ const AddWeeklyFoodDialog = ({
                   min={0}
                   value={formData.calories}
                   onChange={(e) =>
-                    setFormData({ ...formData, calories: parseInt(e.target.value) || 0 })
+                    setFormData({ ...formData, calories: e.target.value })
                   }
                   className="bg-background border-border"
                 />
@@ -347,7 +347,7 @@ const AddWeeklyFoodDialog = ({
                   min={0}
                   value={formData.protein}
                   onChange={(e) =>
-                    setFormData({ ...formData, protein: parseInt(e.target.value) || 0 })
+                    setFormData({ ...formData, protein: e.target.value })
                   }
                   className="bg-background border-border"
                 />
@@ -363,7 +363,7 @@ const AddWeeklyFoodDialog = ({
                   min={0}
                   value={formData.carbs}
                   onChange={(e) =>
-                    setFormData({ ...formData, carbs: parseInt(e.target.value) || 0 })
+                    setFormData({ ...formData, carbs: e.target.value })
                   }
                   className="bg-background border-border"
                 />
@@ -376,7 +376,7 @@ const AddWeeklyFoodDialog = ({
                   min={0}
                   value={formData.fat}
                   onChange={(e) =>
-                    setFormData({ ...formData, fat: parseInt(e.target.value) || 0 })
+                    setFormData({ ...formData, fat: e.target.value })
                   }
                   className="bg-background border-border"
                 />
