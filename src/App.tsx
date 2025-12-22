@@ -11,6 +11,7 @@ import Profile from "./pages/Profile";
 import Onboarding from "./pages/Onboarding";
 import Diet from "./pages/Diet";
 import Install from "./pages/Install";
+import WeeklyChallenge from "./pages/WeeklyChallenge";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/diet" element={<Diet />} />
             <Route path="/install" element={<Install />} />
+            <Route path="/weekly-challenge" element={<WeeklyChallenge />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

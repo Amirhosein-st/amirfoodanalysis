@@ -11,56 +11,139 @@ serve(async (req) => {
   }
 
   try {
-    const { healthProfile } = await req.json();
+    const { healthProfile, weeklyFoodLogs, isPersonalized } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const systemPrompt = `You are a professional nutritionist. Based on the user's health profile, create a personalized daily diet plan. 
-    
-    IMPORTANT: You must respond with ONLY a valid JSON object, no markdown, no code blocks, just pure JSON.
-    
-    The JSON must have this exact structure:
-    {
-      "totalCalories": number,
-      "meals": [
-        {
-          "name": "Meal Name (e.g., Breakfast)",
-          "time": "Time (e.g., 8:00 AM)",
-          "calories": number,
-          "description": "Brief description",
-          "foods": ["food1", "food2", "food3"]
-        }
-      ],
-      "tips": ["tip1", "tip2", "tip3"]
-    }
-    
-    Consider:
-    - User's goal (weight loss, muscle gain, maintenance)
-    - Activity level
-    - Diet preferences
-    - Food allergies and medical conditions
-    - Liked and disliked foods
-    - Number of meals per day they prefer`;
+    let systemPrompt: string;
+    let userPrompt: string;
 
-    const userPrompt = `Create a personalized diet plan for this user:
-    - Gender: ${healthProfile.gender}
-    - Age: ${healthProfile.age} years
-    - Weight: ${healthProfile.weight} kg
-    - Target Weight: ${healthProfile.target_weight} kg
-    - Height: ${healthProfile.height} cm
-    - Goal: ${healthProfile.goal}
-    - Activity Level: ${healthProfile.activity_level}
-    - Diet Preference: ${healthProfile.diet_preference}
-    - Meals Per Day: ${healthProfile.meals_per_day}
-    - Water Intake: ${healthProfile.water_intake} liters
-    - Sleep Hours: ${healthProfile.sleep_hours}
-    - Food Allergies: ${healthProfile.food_allergies?.join(", ") || "None"}
-    - Medical Conditions: ${healthProfile.medical_conditions?.join(", ") || "None"}
-    - Liked Foods: ${healthProfile.liked_foods?.join(", ") || "No preferences"}
-    - Disliked Foods: ${healthProfile.disliked_foods?.join(", ") || "No preferences"}`;
+    if (isPersonalized && weeklyFoodLogs && weeklyFoodLogs.length > 0) {
+      // Personalized diet based on 7-day food logs
+      systemPrompt = `You are a professional nutritionist. You will analyze the user's eating habits from their 7-day food log and create a highly personalized diet plan that:
+      1. Takes into account their current eating patterns and preferences
+      2. Gradually improves their diet while respecting their tastes
+      3. Considers their health goals and profile
+      
+      IMPORTANT: You must respond with ONLY a valid JSON object, no markdown, no code blocks, just pure JSON.
+      
+      The JSON must have this exact structure:
+      {
+        "totalCalories": number,
+        "analysis": {
+          "currentHabits": "Brief analysis of their current eating habits",
+          "improvements": ["improvement1", "improvement2", "improvement3"],
+          "strengths": ["strength1", "strength2"]
+        },
+        "meals": [
+          {
+            "name": "Meal Name (e.g., Breakfast)",
+            "time": "Time (e.g., 8:00 AM)",
+            "calories": number,
+            "description": "Brief description",
+            "foods": ["food1", "food2", "food3"],
+            "basedOn": "Which of their logged meals this is based on or inspired by"
+          }
+        ],
+        "tips": ["personalized tip1", "personalized tip2", "personalized tip3"]
+      }`;
+
+      // Organize food logs by day
+      const logsByDay: Record<number, any[]> = {};
+      weeklyFoodLogs.forEach((log: any) => {
+        if (!logsByDay[log.day_number]) {
+          logsByDay[log.day_number] = [];
+        }
+        logsByDay[log.day_number].push(log);
+      });
+
+      let foodLogSummary = "7-Day Food Log:\n";
+      for (let day = 1; day <= 7; day++) {
+        const dayLogs = logsByDay[day] || [];
+        foodLogSummary += `\nDay ${day}:\n`;
+        if (dayLogs.length === 0) {
+          foodLogSummary += "  No meals logged\n";
+        } else {
+          dayLogs.forEach((log: any) => {
+            foodLogSummary += `  - ${log.meal_type}: ${log.food_name || "Unknown"} (${log.calories || "?"} cal, P: ${log.protein || 0}g, C: ${log.carbs || 0}g, F: ${log.fat || 0}g)\n`;
+          });
+        }
+      }
+
+      userPrompt = `Create a highly personalized diet plan based on this user's profile and their actual eating habits over 7 days:
+
+User Profile:
+- Gender: ${healthProfile.gender}
+- Age: ${healthProfile.age} years
+- Weight: ${healthProfile.weight} kg
+- Target Weight: ${healthProfile.target_weight} kg
+- Height: ${healthProfile.height} cm
+- Goal: ${healthProfile.goal}
+- Activity Level: ${healthProfile.activity_level}
+- Diet Preference: ${healthProfile.diet_preference}
+- Meals Per Day: ${healthProfile.meals_per_day}
+- Water Intake: ${healthProfile.water_intake} liters
+- Sleep Hours: ${healthProfile.sleep_hours}
+- Food Allergies: ${healthProfile.food_allergies?.join(", ") || "None"}
+- Medical Conditions: ${healthProfile.medical_conditions?.join(", ") || "None"}
+- Liked Foods: ${healthProfile.liked_foods?.join(", ") || "No preferences"}
+- Disliked Foods: ${healthProfile.disliked_foods?.join(", ") || "No preferences"}
+
+${foodLogSummary}
+
+Analyze their eating patterns and create a personalized diet that builds on what they already eat while helping them reach their goals.`;
+
+    } else {
+      // Standard diet based on health profile only
+      systemPrompt = `You are a professional nutritionist. Based on the user's health profile, create a personalized daily diet plan. 
+      
+      IMPORTANT: You must respond with ONLY a valid JSON object, no markdown, no code blocks, just pure JSON.
+      
+      The JSON must have this exact structure:
+      {
+        "totalCalories": number,
+        "meals": [
+          {
+            "name": "Meal Name (e.g., Breakfast)",
+            "time": "Time (e.g., 8:00 AM)",
+            "calories": number,
+            "description": "Brief description",
+            "foods": ["food1", "food2", "food3"]
+          }
+        ],
+        "tips": ["tip1", "tip2", "tip3"]
+      }
+      
+      Consider:
+      - User's goal (weight loss, muscle gain, maintenance)
+      - Activity level
+      - Diet preferences
+      - Food allergies and medical conditions
+      - Liked and disliked foods
+      - Number of meals per day they prefer`;
+
+      userPrompt = `Create a personalized diet plan for this user:
+      - Gender: ${healthProfile.gender}
+      - Age: ${healthProfile.age} years
+      - Weight: ${healthProfile.weight} kg
+      - Target Weight: ${healthProfile.target_weight} kg
+      - Height: ${healthProfile.height} cm
+      - Goal: ${healthProfile.goal}
+      - Activity Level: ${healthProfile.activity_level}
+      - Diet Preference: ${healthProfile.diet_preference}
+      - Meals Per Day: ${healthProfile.meals_per_day}
+      - Water Intake: ${healthProfile.water_intake} liters
+      - Sleep Hours: ${healthProfile.sleep_hours}
+      - Food Allergies: ${healthProfile.food_allergies?.join(", ") || "None"}
+      - Medical Conditions: ${healthProfile.medical_conditions?.join(", ") || "None"}
+      - Liked Foods: ${healthProfile.liked_foods?.join(", ") || "No preferences"}
+      - Disliked Foods: ${healthProfile.disliked_foods?.join(", ") || "No preferences"}`;
+    }
+
+    console.log("Generating diet with prompt:", { isPersonalized, hasWeeklyLogs: !!weeklyFoodLogs });
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
