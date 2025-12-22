@@ -155,8 +155,8 @@ const Onboarding = () => {
         }
         break;
       case 8:
-        if (!data.mealsPerDay || data.mealsPerDay < 1 || data.mealsPerDay > 6) {
-          setError("Please select meals per day (1-6)");
+        if (!data.mealsPerDay || data.mealsPerDay < 2 || data.mealsPerDay > 4) {
+          setError("Please select meals per day (2-4)");
           return false;
         }
         break;
@@ -422,7 +422,7 @@ const Onboarding = () => {
             <h2 className="text-2xl font-bold text-foreground">How many meals per day?</h2>
             <p className="text-muted-foreground">Including snacks</p>
             <div className="grid grid-cols-3 gap-3">
-              {[1, 2, 3, 4, 5, 6].map((num) => (
+              {[2, 3, 4].map((num) => (
                 <Button
                   key={num}
                   type="button"
