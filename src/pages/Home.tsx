@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Utensils, Sparkles, Loader2 } from "lucide-react";
+import { Utensils, Sparkles, Loader2, Calendar } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useToast } from "@/hooks/use-toast";
 import { User } from "@supabase/supabase-js";
@@ -180,6 +180,26 @@ const Home = () => {
                 ) : (
                   "Generate Diet"
                 )}
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-primary/50"
+            onClick={() => navigate("/weekly-challenge")}
+          >
+            <CardHeader className="pb-2">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                <Calendar className="w-6 h-6 text-primary" />
+              </div>
+              <CardTitle>7-Day Challenge</CardTitle>
+              <CardDescription>
+                Log your meals for 7 days and get a unique AI diet plan based on your eating habits
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full" variant="outline">
+                Start Challenge
               </Button>
             </CardContent>
           </Card>
