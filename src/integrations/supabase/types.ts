@@ -161,6 +161,54 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_food_log: {
+        Row: {
+          ai_analysis: Json | null
+          calories: number | null
+          carbs: number | null
+          created_at: string
+          day_number: number
+          fat: number | null
+          food_name: string | null
+          id: string
+          image_url: string | null
+          meal_type: string
+          protein: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_analysis?: Json | null
+          calories?: number | null
+          carbs?: number | null
+          created_at?: string
+          day_number: number
+          fat?: number | null
+          food_name?: string | null
+          id?: string
+          image_url?: string | null
+          meal_type?: string
+          protein?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_analysis?: Json | null
+          calories?: number | null
+          carbs?: number | null
+          created_at?: string
+          day_number?: number
+          fat?: number | null
+          food_name?: string | null
+          id?: string
+          image_url?: string | null
+          meal_type?: string
+          protein?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
