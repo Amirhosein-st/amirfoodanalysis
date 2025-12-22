@@ -162,7 +162,12 @@ const AddWeeklyFoodDialog = ({
 
       // Upload image if exists
       if (imageFile) {
-        const fileName = `${userId}/${Date.now()}_${imageFile.name}`;
+        // Sanitize filename: remove non-ASCII characters and replace spaces
+        const sanitizedName = imageFile.name
+          .replace(/[^\x00-\x7F]/g, '') // Remove non-ASCII characters
+          .replace(/\s+/g, '_') // Replace spaces with underscores
+          .replace(/[^a-zA-Z0-9._-]/g, ''); // Keep only safe characters
+        const fileName = `${userId}/${Date.now()}_${sanitizedName || 'image.jpg'}`;
         const { error: uploadError } = await supabase.storage
           .from("food-images")
           .upload(fileName, imageFile);
