@@ -43,6 +43,7 @@ const AddFoodDialog = ({ onFoodAdded }: AddFoodDialogProps) => {
   const [protein, setProtein] = useState("");
   const [carbs, setCarbs] = useState("");
   const [fat, setFat] = useState("");
+  const [servingSize, setServingSize] = useState("");
   const [mealType, setMealType] = useState("snack");
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [analysisNotes, setAnalysisNotes] = useState<string | null>(null);
@@ -58,6 +59,7 @@ const AddFoodDialog = ({ onFoodAdded }: AddFoodDialogProps) => {
     setProtein("");
     setCarbs("");
     setFat("");
+    setServingSize("");
     setMealType("snack");
     setPreviewImage(null);
     setAnalysisNotes(null);
@@ -113,6 +115,7 @@ const AddFoodDialog = ({ onFoodAdded }: AddFoodDialogProps) => {
       setProtein(data.protein?.toString() || "");
       setCarbs(data.carbs?.toString() || "");
       setFat(data.fat?.toString() || "");
+      setServingSize(data.serving_size || "1 serving");
       setIsAnalyzed(true);
       
       if (data.notes) {
@@ -299,6 +302,24 @@ const AddFoodDialog = ({ onFoodAdded }: AddFoodDialogProps) => {
               readOnly={isAnalyzed}
               className={isAnalyzed ? "bg-muted cursor-not-allowed" : ""}
             />
+          </div>
+
+          {/* Serving Size - shows how much to eat */}
+          <div className="space-y-2">
+            <Label htmlFor="servingSize">Serving Size (how much to eat)</Label>
+            <Input
+              id="servingSize"
+              placeholder="e.g., 1 cup, 200g, 2 pieces"
+              value={servingSize}
+              onChange={(e) => setServingSize(e.target.value)}
+              readOnly={isAnalyzed}
+              className={isAnalyzed ? "bg-muted cursor-not-allowed" : ""}
+            />
+            {servingSize && (
+              <p className="text-xs text-muted-foreground">
+                Recommended amount: <span className="font-medium text-primary">{servingSize}</span>
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
