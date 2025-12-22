@@ -110,6 +110,7 @@ export type Database = {
           liked_foods: string[] | null
           meals_per_day: number
           medical_conditions: string[] | null
+          nationality: string | null
           sleep_hours: number
           target_weight: number
           updated_at: string
@@ -131,6 +132,7 @@ export type Database = {
           liked_foods?: string[] | null
           meals_per_day: number
           medical_conditions?: string[] | null
+          nationality?: string | null
           sleep_hours: number
           target_weight: number
           updated_at?: string
@@ -152,6 +154,7 @@ export type Database = {
           liked_foods?: string[] | null
           meals_per_day?: number
           medical_conditions?: string[] | null
+          nationality?: string | null
           sleep_hours?: number
           target_weight?: number
           updated_at?: string
