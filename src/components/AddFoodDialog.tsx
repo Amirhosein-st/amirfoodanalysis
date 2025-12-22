@@ -20,6 +20,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Utensils, Camera, Upload, Sparkles, Loader2 } from "lucide-react";
 import { z } from "zod";
+import { getMealTypesForCount } from "@/lib/mealTypes";
 
 const foodSchema = z.object({
   food_name: z.string().min(1, "Food name is required"),
@@ -32,9 +33,13 @@ const foodSchema = z.object({
 
 interface AddFoodDialogProps {
   onFoodAdded: () => void;
+  mealsPerDay: number;
 }
 
-const AddFoodDialog = ({ onFoodAdded }: AddFoodDialogProps) => {
+const AddFoodDialog = ({ onFoodAdded, mealsPerDay }: AddFoodDialogProps) => {
+  const mealTypes = getMealTypesForCount(mealsPerDay);
+  const defaultMealType = mealTypes[0]?.key || "breakfast";
+  
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
@@ -43,7 +48,7 @@ const AddFoodDialog = ({ onFoodAdded }: AddFoodDialogProps) => {
   const [protein, setProtein] = useState("");
   const [carbs, setCarbs] = useState("");
   const [fat, setFat] = useState("");
-  const [mealType, setMealType] = useState("snack");
+  const [mealType, setMealType] = useState(defaultMealType);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [analysisNotes, setAnalysisNotes] = useState<string | null>(null);
   const [isAnalyzed, setIsAnalyzed] = useState(false);
@@ -58,7 +63,7 @@ const AddFoodDialog = ({ onFoodAdded }: AddFoodDialogProps) => {
     setProtein("");
     setCarbs("");
     setFat("");
-    setMealType("snack");
+    setMealType(defaultMealType);
     setPreviewImage(null);
     setAnalysisNotes(null);
     setIsAnalyzed(false);
@@ -322,10 +327,9 @@ const AddFoodDialog = ({ onFoodAdded }: AddFoodDialogProps) => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="breakfast">Breakfast</SelectItem>
-                  <SelectItem value="lunch">Lunch</SelectItem>
-                  <SelectItem value="dinner">Dinner</SelectItem>
-                  <SelectItem value="snack">Snack</SelectItem>
+                  {mealTypes.map(({ key, label }) => (
+                    <SelectItem key={key} value={key}>{label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

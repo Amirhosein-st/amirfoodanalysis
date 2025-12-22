@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Camera, Upload, Sparkles, Utensils, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { getMealTypesForCount } from "@/lib/mealTypes";
 
 interface AddWeeklyFoodDialogProps {
   open: boolean;
@@ -16,14 +17,8 @@ interface AddWeeklyFoodDialogProps {
   dayNumber: number;
   defaultMealType: string;
   onFoodAdded: (food: any) => void;
+  mealsPerDay: number;
 }
-
-const MEAL_TYPES = [
-  { value: "breakfast", label: "Breakfast" },
-  { value: "lunch", label: "Lunch" },
-  { value: "dinner", label: "Dinner" },
-  { value: "snack", label: "Snack" },
-];
 
 const AddWeeklyFoodDialog = ({
   open,
@@ -32,7 +27,9 @@ const AddWeeklyFoodDialog = ({
   dayNumber,
   defaultMealType,
   onFoodAdded,
+  mealsPerDay,
 }: AddWeeklyFoodDialogProps) => {
+  const mealTypes = getMealTypesForCount(mealsPerDay);
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
