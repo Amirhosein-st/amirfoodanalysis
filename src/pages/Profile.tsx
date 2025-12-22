@@ -192,22 +192,6 @@ const Profile = () => {
                   {getInitials()}
                 </AvatarFallback>
               </Avatar>
-              <div className="w-full space-y-2">
-                <Label htmlFor="avatarUrl">Avatar URL</Label>
-                <Input
-                  id="avatarUrl"
-                  placeholder="https://example.com/avatar.jpg"
-                  value={avatarUrl}
-                  onChange={(e) => setAvatarUrl(e.target.value)}
-                  disabled={avatarSet}
-                  className={avatarSet ? "bg-muted cursor-not-allowed" : ""}
-                />
-                {avatarSet && (
-                  <p className="text-xs text-muted-foreground">
-                    Avatar can only be set once
-                  </p>
-                )}
-              </div>
             </div>
           </CardContent>
         </Card>
