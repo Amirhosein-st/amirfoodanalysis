@@ -95,6 +95,36 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_diet_plans: {
+        Row: {
+          created_at: string
+          id: string
+          meals: Json
+          tips: Json | null
+          total_calories: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          meals: Json
+          tips?: Json | null
+          total_calories: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          meals?: Json
+          tips?: Json | null
+          total_calories?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_health_profiles: {
         Row: {
           activity_level: string
