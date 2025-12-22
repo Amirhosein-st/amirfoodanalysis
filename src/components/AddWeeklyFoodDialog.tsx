@@ -41,6 +41,7 @@ const AddWeeklyFoodDialog = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isAiAnalyzed, setIsAiAnalyzed] = useState(false);
 
   const [formData, setFormData] = useState({
     foodName: "",
@@ -74,6 +75,7 @@ const AddWeeklyFoodDialog = ({
     setImageFile(null);
     setIsAnalyzing(false);
     setIsSubmitting(false);
+    setIsAiAnalyzed(false);
   };
 
   const handleClose = () => {
@@ -125,6 +127,8 @@ const AddWeeklyFoodDialog = ({
         carbs: String(data.carbs || 0),
         fat: String(data.fat || 0),
       }));
+
+      setIsAiAnalyzed(true);
 
       toast({
         title: "Analysis complete",
@@ -322,6 +326,8 @@ const AddWeeklyFoodDialog = ({
                   setFormData({ ...formData, foodName: e.target.value })
                 }
                 className="bg-background border-border"
+                disabled={isAiAnalyzed}
+                readOnly={isAiAnalyzed}
               />
             </div>
 
@@ -337,6 +343,8 @@ const AddWeeklyFoodDialog = ({
                     setFormData({ ...formData, calories: e.target.value })
                   }
                   className="bg-background border-border"
+                  disabled={isAiAnalyzed}
+                  readOnly={isAiAnalyzed}
                 />
               </div>
               <div className="space-y-2">
@@ -350,6 +358,8 @@ const AddWeeklyFoodDialog = ({
                     setFormData({ ...formData, protein: e.target.value })
                   }
                   className="bg-background border-border"
+                  disabled={isAiAnalyzed}
+                  readOnly={isAiAnalyzed}
                 />
               </div>
             </div>
@@ -366,6 +376,8 @@ const AddWeeklyFoodDialog = ({
                     setFormData({ ...formData, carbs: e.target.value })
                   }
                   className="bg-background border-border"
+                  disabled={isAiAnalyzed}
+                  readOnly={isAiAnalyzed}
                 />
               </div>
               <div className="space-y-2">
@@ -379,6 +391,8 @@ const AddWeeklyFoodDialog = ({
                     setFormData({ ...formData, fat: e.target.value })
                   }
                   className="bg-background border-border"
+                  disabled={isAiAnalyzed}
+                  readOnly={isAiAnalyzed}
                 />
               </div>
             </div>
