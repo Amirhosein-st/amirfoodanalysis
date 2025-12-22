@@ -394,7 +394,8 @@ const Profile = () => {
         </Card>
 
 
-        {(!usernameSet || !avatarSet) && (
+        {/* Only show save button if there are unsaved changes */}
+        {((!usernameSet && username.trim()) || (!avatarSet && avatarUrl.trim())) && (
           <Button
             variant="hero"
             className="w-full gap-2"
