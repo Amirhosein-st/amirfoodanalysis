@@ -108,24 +108,10 @@
     @apply border-border;
   }
 
-  html {
-    /* iOS safe area support */
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-  }
-
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Outfit', sans-serif;
   }
-}
-
-/* Safe area utilities for iOS */
-.safe-top {
-  padding-top: env(safe-area-inset-top);
-}
-
-.safe-bottom {
-  padding-bottom: env(safe-area-inset-bottom);
 }
 
 @layer utilities {

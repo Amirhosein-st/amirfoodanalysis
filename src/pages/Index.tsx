@@ -184,7 +184,7 @@ const Index = () => {
   return (
     <div className="min-h-screen gradient-hero">
       {/* Header */}
-      <header className="bg-card/80 backdrop-blur-lg border-b border-border sticky top-0 z-10 safe-top">
+      <header className="bg-card/80 backdrop-blur-lg border-b border-border sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
