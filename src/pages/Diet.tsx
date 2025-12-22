@@ -1,9 +1,12 @@
+import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Utensils, Clock, Flame } from "lucide-react";
+import { ArrowLeft, Utensils, Clock, Flame, Save } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface Meal {
   name: string;
@@ -23,6 +26,43 @@ const Diet = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const diet = location.state?.diet as DietPlan | undefined;
+  const { toast } = useToast();
+
+  // Auto-save diet plan when loaded
+  useEffect(() => {
+    const saveDietPlan = async () => {
+      if (!diet) return;
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Delete existing diet plan and insert new one
+      await supabase
+        .from("saved_diet_plans")
+        .delete()
+        .eq("user_id", user.id);
+
+      const { error } = await supabase
+        .from("saved_diet_plans")
+        .insert([{
+          user_id: user.id,
+          total_calories: diet.totalCalories,
+          meals: JSON.parse(JSON.stringify(diet.meals)),
+          tips: JSON.parse(JSON.stringify(diet.tips)),
+        }]);
+
+      if (error) {
+        console.error("Error saving diet plan:", error);
+      } else {
+        toast({
+          title: "Diet Plan Saved",
+          description: "Your diet plan has been saved and will be used for meal tracking.",
+        });
+      }
+    };
+
+    saveDietPlan();
+  }, [diet]);
 
   if (!diet) {
     return (

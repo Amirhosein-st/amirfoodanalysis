@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Utensils, Camera, Upload, Sparkles, Loader2 } from "lucide-react";
+import { Plus, Utensils, Camera, Upload, Sparkles, Loader2, AlertTriangle } from "lucide-react";
 import { z } from "zod";
 import { getMealTypesForCount } from "@/lib/mealTypes";
 
@@ -30,6 +30,11 @@ const foodSchema = z.object({
   fat: z.number().min(0).optional(),
   meal_type: z.string(),
 });
+
+interface MealCalorieTarget {
+  name: string;
+  calories: number;
+}
 
 interface AddFoodDialogProps {
   onFoodAdded: () => void;
@@ -52,10 +57,69 @@ const AddFoodDialog = ({ onFoodAdded, mealsPerDay }: AddFoodDialogProps) => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [analysisNotes, setAnalysisNotes] = useState<string | null>(null);
   const [isAnalyzed, setIsAnalyzed] = useState(false);
+  const [mealCalorieTargets, setMealCalorieTargets] = useState<MealCalorieTarget[]>([]);
   const { toast } = useToast();
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch saved diet plan meal calorie targets
+  useEffect(() => {
+    const fetchDietPlan = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("saved_diet_plans")
+        .select("meals")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+
+      if (!error && data?.meals) {
+        const meals = data.meals as unknown as MealCalorieTarget[];
+        setMealCalorieTargets(meals);
+      }
+    };
+
+    if (open) {
+      fetchDietPlan();
+    }
+  }, [open]);
+
+  // Get target calories for current meal type
+  const getTargetCaloriesForMeal = (mealTypeKey: string): number | null => {
+    const mealLabel = mealTypes.find(m => m.key === mealTypeKey)?.label;
+    if (!mealLabel) return null;
+    
+    const target = mealCalorieTargets.find(
+      m => m.name.toLowerCase() === mealLabel.toLowerCase()
+    );
+    return target?.calories || null;
+  };
+
+  // Calculate portion recommendation
+  const getPortionRecommendation = (): { show: boolean; percentage: number; message: string } | null => {
+    const foodCalories = parseInt(calories) || 0;
+    const targetCalories = getTargetCaloriesForMeal(mealType);
+    
+    if (!targetCalories || foodCalories <= 0) return null;
+    
+    if (foodCalories > targetCalories) {
+      const percentage = Math.round((targetCalories / foodCalories) * 100);
+      return {
+        show: true,
+        percentage,
+        message: `این غذا ${foodCalories} کالری دارد که بیشتر از هدف ${targetCalories} کالری برای این وعده است. توصیه می‌شود حدود ${percentage}% از این غذا را بخورید.`,
+      };
+    }
+    
+    return null;
+  };
+
+  const portionRecommendation = getPortionRecommendation();
+  const targetCalories = getTargetCaloriesForMeal(mealType);
 
   const resetForm = () => {
     setFoodName("");
@@ -308,7 +372,14 @@ const AddFoodDialog = ({ onFoodAdded, mealsPerDay }: AddFoodDialogProps) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="calories">Calories</Label>
+              <Label htmlFor="calories">
+                Calories
+                {targetCalories && (
+                  <span className="text-xs text-muted-foreground ml-1">
+                    (هدف: {targetCalories})
+                  </span>
+                )}
+              </Label>
               <Input
                 id="calories"
                 type="number"
@@ -334,6 +405,30 @@ const AddFoodDialog = ({ onFoodAdded, mealsPerDay }: AddFoodDialogProps) => {
               </Select>
             </div>
           </div>
+
+          {/* Portion Recommendation */}
+          {portionRecommendation && portionRecommendation.show && (
+            <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 space-y-2">
+              <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+                <AlertTriangle className="w-4 h-4" />
+                <span className="font-medium text-sm">توصیه مقدار مصرف</span>
+              </div>
+              <p className="text-sm text-amber-700 dark:text-amber-300">
+                {portionRecommendation.message}
+              </p>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 h-2 bg-amber-200 dark:bg-amber-900 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-amber-500 rounded-full transition-all"
+                    style={{ width: `${portionRecommendation.percentage}%` }}
+                  />
+                </div>
+                <span className="text-sm font-bold text-amber-600 dark:text-amber-400">
+                  {portionRecommendation.percentage}%
+                </span>
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-2">
