@@ -224,7 +224,7 @@ const WeeklyChallenge = () => {
   const daysCompleted = getDayProgress();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background max-w-[1400px] mx-auto">
       <header className="p-4 flex items-center justify-between border-b border-border">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
