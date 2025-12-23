@@ -384,24 +384,26 @@ const WeeklyChallenge = () => {
 
       {/* Fixed Bottom Button */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t border-border">
-        <Button
-          className="w-full"
-          size="lg"
-          onClick={handleGeneratePersonalizedDiet}
-          disabled={daysCompleted < 7 || generatingDiet}
-        >
-          {generatingDiet ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Generating...
-            </>
-          ) : (
-            <>
-              <Sparkles className="w-4 h-4 mr-2" />
-              Get Personalized Diet ({daysCompleted}/7 days)
-            </>
-          )}
-        </Button>
+        <div className="max-w-[1400px] mx-auto">
+          <Button
+            className="w-full"
+            size="lg"
+            onClick={handleGeneratePersonalizedDiet}
+            disabled={daysCompleted < 7 || generatingDiet}
+          >
+            {generatingDiet ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4 mr-2" />
+                Get Personalized Diet ({daysCompleted}/7 days)
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
       {/* Add Food Dialog */}
