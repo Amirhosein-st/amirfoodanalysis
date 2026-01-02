@@ -18,6 +18,10 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
+    // Generate a random seed to ensure variety each time
+    const randomSeed = Math.random().toString(36).substring(7);
+    const todayDate = new Date().toISOString().split('T')[0];
+
     let systemPrompt: string;
     let userPrompt: string;
 
@@ -28,7 +32,14 @@ serve(async (req) => {
       2. Gradually improves their diet while respecting their tastes
       3. Considers their health goals and profile
       4. PRIORITIZES foods from their cultural background/nationality - suggest traditional and popular dishes from their cuisine
-      5. Provides 3 DIFFERENT MEAL OPTIONS for each meal type so users can choose
+      5. Provides 3 COMPLETELY DIFFERENT and UNIQUE meal options for each meal type
+      
+      CRITICAL - VARIETY REQUIREMENT:
+      - Each of the 3 options per meal MUST be completely different meals, not variations of the same dish
+      - Use different main ingredients, cooking styles, and flavor profiles for each option
+      - Mix traditional and modern healthy dishes
+      - Generate FRESH and UNIQUE suggestions every time - never repeat the same meals
+      - Random seed for variety: ${randomSeed}
       
       IMPORTANT CALORIE DISTRIBUTION: 
       - Breakfast and Lunch should have MORE calories than Dinner and Snack
@@ -127,11 +138,20 @@ User Profile:
 
 ${foodLogSummary}
 
-Analyze their eating patterns and create a personalized diet that builds on what they already eat while helping them reach their goals. PRIORITIZE foods from their ${healthProfile.nationality || "cultural"} cuisine.`;
+Analyze their eating patterns and create a personalized diet that builds on what they already eat while helping them reach their goals. PRIORITIZE foods from their ${healthProfile.nationality || "cultural"} cuisine.
+
+IMPORTANT: Generate completely NEW and DIFFERENT meal suggestions. Today's date: ${todayDate}, Variety seed: ${randomSeed}`;
 
     } else {
       // Standard diet based on health profile only
-      systemPrompt = `You are a professional nutritionist. Based on the user's health profile, create a personalized daily diet plan with 3 DIFFERENT OPTIONS for each meal type.
+      systemPrompt = `You are a professional nutritionist. Based on the user's health profile, create a personalized daily diet plan with 3 COMPLETELY DIFFERENT and UNIQUE options for each meal type.
+      
+      CRITICAL - VARIETY REQUIREMENT:
+      - Each of the 3 options per meal MUST be completely different meals, not variations of the same dish
+      - Use different main ingredients, cooking styles, and flavor profiles for each option
+      - Mix traditional and modern healthy dishes from the user's culture
+      - Generate FRESH and UNIQUE suggestions every time - never repeat the same meals
+      - Random seed for variety: ${randomSeed}
       
       IMPORTANT CALORIE DISTRIBUTION: 
       - Breakfast and Lunch should have MORE calories than Dinner and Snack
@@ -208,7 +228,9 @@ Analyze their eating patterns and create a personalized diet that builds on what
       - Liked Foods: ${healthProfile.liked_foods?.join(", ") || "No preferences"}
       - Disliked Foods: ${healthProfile.disliked_foods?.join(", ") || "No preferences"}
       
-Make sure to suggest foods that are traditional and commonly eaten in ${healthProfile.nationality || "the user's"} cuisine while keeping them healthy and aligned with their goals.`;
+Make sure to suggest foods that are traditional and commonly eaten in ${healthProfile.nationality || "the user's"} cuisine while keeping them healthy and aligned with their goals.
+
+IMPORTANT: Generate completely NEW and DIFFERENT meal suggestions. Today's date: ${todayDate}, Variety seed: ${randomSeed}`;
     }
 
     console.log("Generating diet with prompt:", { isPersonalized, hasWeeklyLogs: !!weeklyFoodLogs });
