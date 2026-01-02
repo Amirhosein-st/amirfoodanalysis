@@ -8,12 +8,19 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-interface Meal {
+interface MealOption {
   name: string;
-  time: string;
   calories: number;
   description: string;
   foods: string[];
+  basedOn?: string;
+}
+
+interface Meal {
+  name: string;
+  time: string;
+  targetCalories: number;
+  options: MealOption[];
 }
 
 interface DietPlan {
@@ -101,44 +108,60 @@ const Diet = () => {
           </Card>
 
           {/* Meals */}
-          <div className="space-y-4">
+          <div className="space-y-6">
             <h2 className="text-lg font-semibold text-foreground">Daily Meals</h2>
             {diet.meals.map((meal, index) => (
-              <Card key={index}>
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Utensils className="w-5 h-5 text-primary" />
+              <div key={index} className="space-y-3">
+                {/* Meal Type Header */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Utensils className="w-4 h-4 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground">{meal.name}</h3>
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <Clock className="w-3 h-3" />
+                        Best time: {meal.time}
                       </div>
-                      <div>
-                        <CardTitle className="text-base">{meal.name}</CardTitle>
-                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                          <Clock className="w-3 h-3" />
-                          Best time to eat: {meal.time}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-sm font-medium text-primary">~{meal.targetCalories} kcal</span>
+                  </div>
+                </div>
+
+                {/* 3 Options for this meal */}
+                <div className="grid gap-3">
+                  {meal.options.map((option, optionIndex) => (
+                    <Card key={optionIndex} className="border-l-4 border-l-primary/30">
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <span className="text-xs font-medium text-muted-foreground">Option {optionIndex + 1}</span>
+                            <h4 className="font-medium text-foreground">{option.name}</h4>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-lg font-bold text-primary">{option.calories}</span>
+                            <p className="text-xs text-muted-foreground">kcal</p>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-lg font-bold text-primary">{meal.calories}</span>
-                      <p className="text-xs text-muted-foreground">kcal</p>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-2">
-                  <p className="text-sm text-muted-foreground mb-2">{meal.description}</p>
-                  <div className="flex flex-wrap gap-1">
-                    {meal.foods.map((food, foodIndex) => (
-                      <span
-                        key={foodIndex}
-                        className="text-xs bg-secondary px-2 py-1 rounded-full text-secondary-foreground"
-                      >
-                        {food}
-                      </span>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                        <p className="text-sm text-muted-foreground mb-2">{option.description}</p>
+                        <div className="flex flex-wrap gap-1">
+                          {option.foods.map((food, foodIndex) => (
+                            <span
+                              key={foodIndex}
+                              className="text-xs bg-secondary px-2 py-1 rounded-full text-secondary-foreground"
+                            >
+                              {food}
+                            </span>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
 

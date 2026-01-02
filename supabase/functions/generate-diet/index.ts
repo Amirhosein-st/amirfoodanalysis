@@ -28,6 +28,7 @@ serve(async (req) => {
       2. Gradually improves their diet while respecting their tastes
       3. Considers their health goals and profile
       4. PRIORITIZES foods from their cultural background/nationality - suggest traditional and popular dishes from their cuisine
+      5. Provides 3 DIFFERENT MEAL OPTIONS for each meal type so users can choose
       
       IMPORTANT CALORIE DISTRIBUTION: 
       - Breakfast and Lunch should have MORE calories than Dinner and Snack
@@ -51,12 +52,32 @@ serve(async (req) => {
         },
         "meals": [
           {
-            "name": "Meal Name (e.g., Breakfast)",
+            "name": "Meal Type (e.g., Breakfast)",
             "time": "Time (e.g., 8:00 AM)",
-            "calories": number,
-            "description": "Brief description",
-            "foods": ["food1", "food2", "food3"],
-            "basedOn": "Which of their logged meals this is based on or inspired by"
+            "targetCalories": number,
+            "options": [
+              {
+                "name": "Option name (e.g., Classic Eggs & Toast)",
+                "calories": number,
+                "description": "Brief description",
+                "foods": ["food1", "food2", "food3"],
+                "basedOn": "Which of their logged meals this is based on or inspired by"
+              },
+              {
+                "name": "Option 2 name",
+                "calories": number,
+                "description": "Brief description",
+                "foods": ["food1", "food2", "food3"],
+                "basedOn": "inspiration source"
+              },
+              {
+                "name": "Option 3 name",
+                "calories": number,
+                "description": "Brief description",
+                "foods": ["food1", "food2", "food3"],
+                "basedOn": "inspiration source"
+              }
+            ]
           }
         ],
         "tips": ["personalized tip1", "personalized tip2", "personalized tip3"]
@@ -110,7 +131,7 @@ Analyze their eating patterns and create a personalized diet that builds on what
 
     } else {
       // Standard diet based on health profile only
-      systemPrompt = `You are a professional nutritionist. Based on the user's health profile, create a personalized daily diet plan. 
+      systemPrompt = `You are a professional nutritionist. Based on the user's health profile, create a personalized daily diet plan with 3 DIFFERENT OPTIONS for each meal type.
       
       IMPORTANT CALORIE DISTRIBUTION: 
       - Breakfast and Lunch should have MORE calories than Dinner and Snack
@@ -132,11 +153,29 @@ Analyze their eating patterns and create a personalized diet that builds on what
         "totalCalories": number,
         "meals": [
           {
-            "name": "Meal Name (e.g., Breakfast)",
-            "time": "Time (e.g., 8:00 AM)",
-            "calories": number,
-            "description": "Brief description",
-            "foods": ["food1", "food2", "food3"]
+            "name": "Meal Type (e.g., Breakfast)",
+            "time": "Recommended time (e.g., 8:00 AM)",
+            "targetCalories": number,
+            "options": [
+              {
+                "name": "Option name (e.g., Classic Eggs & Toast)",
+                "calories": number,
+                "description": "Brief description",
+                "foods": ["food1", "food2", "food3"]
+              },
+              {
+                "name": "Option 2 name",
+                "calories": number,
+                "description": "Brief description",
+                "foods": ["food1", "food2", "food3"]
+              },
+              {
+                "name": "Option 3 name",
+                "calories": number,
+                "description": "Brief description",
+                "foods": ["food1", "food2", "food3"]
+              }
+            ]
           }
         ],
         "tips": ["tip1", "tip2", "tip3"]
