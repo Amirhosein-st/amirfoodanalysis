@@ -11,6 +11,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { routes } from "@/lib/routes";
 
 const Profile = () => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
@@ -35,7 +36,7 @@ const Profile = () => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate("/auth");
+    navigate(routes.auth);
   };
 
   const handleResetSelectedMeals = () => {
@@ -61,7 +62,7 @@ const Profile = () => {
       (event, session) => {
         setUser(session?.user ?? null);
         if (!session) {
-          navigate("/auth");
+          navigate(routes.auth);
         }
       }
     );
@@ -70,7 +71,7 @@ const Profile = () => {
       setUser(session?.user ?? null);
       setLoading(false);
       if (!session) {
-        navigate("/auth");
+        navigate(routes.auth);
       }
     });
 
@@ -261,7 +262,7 @@ const Profile = () => {
       <header className="bg-card/80 backdrop-blur-lg border-b border-border sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+            <Button variant="ghost" size="icon" onClick={() => navigate(routes.home)}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <User className="w-5 h-5 text-primary" />

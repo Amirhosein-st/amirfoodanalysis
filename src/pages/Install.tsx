@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Download, Share, Plus, ArrowLeft, Check, Smartphone } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
+import { routes } from "@/lib/routes";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -210,7 +211,7 @@ const Install = () => {
         <Button 
           variant="outline" 
           className="w-full"
-          onClick={() => navigate("/")}
+          onClick={() => navigate(routes.home)}
         >
           Continue to App
         </Button>

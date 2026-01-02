@@ -7,6 +7,7 @@ import { Utensils, Sparkles, Loader2, Calendar, User as UserIcon } from "lucide-
 import ThemeToggle from "@/components/ThemeToggle";
 import { useToast } from "@/hooks/use-toast";
 import { User } from "@supabase/supabase-js";
+import { routes } from "@/lib/routes";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -21,14 +22,14 @@ const Home = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
       if (!session?.user) {
-        navigate("/auth");
+        navigate(routes.auth);
       }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       if (!session?.user) {
-        navigate("/auth");
+        navigate(routes.auth);
       } else {
         checkOnboardingAndFetchProfile(session.user.id);
       }
@@ -54,7 +55,7 @@ const Home = () => {
         .single();
 
       if (!healthProfile) {
-        navigate("/onboarding");
+        navigate(routes.onboarding);
         return;
       }
 
@@ -76,13 +77,13 @@ const Home = () => {
   const handleGenerateDiet = async () => {
     if (!user) return;
 
-      if (hasSelectedMeals) {
-        toast({
-          title: "You have a diet plan for today!",
-          description: "Navigating to your tracker to view today's meal plan.",
-        });
-        navigate("/tracker", { state: { fromDietPlan: true } });
-        return;
+    if (hasSelectedMeals) {
+      toast({
+        title: "You have a diet plan for today!",
+        description: "Navigating to your tracker to view today's meal plan.",
+      });
+      navigate(routes.tracker, { state: { fromDietPlan: true } });
+      return;
     }
 
     setGeneratingDiet(true);
@@ -113,7 +114,7 @@ const Home = () => {
       }
 
       // Navigate to diet page with the generated diet
-      navigate("/diet", { state: { diet: data.diet } });
+      navigate(routes.diet, { state: { diet: data.diet } });
     } catch (error) {
       console.error("Error generating diet:", error);
       toast({
@@ -145,7 +146,7 @@ const Home = () => {
           <h1 className="text-xl font-bold text-foreground">Rima Food Tracker</h1>
           <div className="flex items-center gap-1">
             <ThemeToggle />
-            <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
+            <Button variant="ghost" size="icon" onClick={() => navigate(routes.profile)}>
               <UserIcon className="w-5 h-5" />
             </Button>
           </div>
@@ -165,7 +166,7 @@ const Home = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-[1400px]">
           <Card 
             className="relative overflow-hidden cursor-pointer border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card hover:border-primary/50 transition-all duration-300 hover:shadow-elevated hover:-translate-y-1 group"
-            onClick={() => navigate("/tracker", { state: { fromDietPlan: false } })}
+            onClick={() => navigate(routes.tracker, { state: { fromDietPlan: false } })}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <CardHeader className="pb-4">

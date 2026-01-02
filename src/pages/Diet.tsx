@@ -7,6 +7,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import IntroductionModal from "@/components/IntroductionModal";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { routes } from "@/lib/routes";
 
 interface MealOption {
   name: string;
@@ -279,7 +280,7 @@ const Diet = () => {
         description: "Your diet plan has been saved successfully.",
       });
       
-      navigate("/tracker", { state: { fromDietPlan: true } });
+      navigate(routes.tracker, { state: { fromDietPlan: true } });
     } catch (error) {
       console.error("Error saving diet plan:", error);
       toast({
@@ -296,7 +297,7 @@ const Diet = () => {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
         <p className="text-muted-foreground mb-4">No diet plan available</p>
-        <Button onClick={() => navigate("/")}>Go Back</Button>
+        <Button onClick={() => navigate(routes.home)}>Go Back</Button>
       </div>
     );
   }
@@ -330,7 +331,7 @@ const Diet = () => {
       <header className="sticky top-0 bg-card/80 backdrop-blur-lg border-b border-border z-10 w-full">
         <div className="max-w-[1400px] mx-auto p-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+            <Button variant="ghost" size="icon" onClick={() => navigate(routes.home)}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <h1 className="text-xl font-bold text-foreground">Your Diet Plan</h1>
@@ -453,7 +454,7 @@ const Diet = () => {
           <Button 
             variant="outline" 
             className="flex-1 h-[48px]"
-            onClick={() => navigate("/")}
+            onClick={() => navigate(routes.home)}
           >
             Cancel
           </Button>

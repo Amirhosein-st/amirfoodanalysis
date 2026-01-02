@@ -11,6 +11,7 @@ import MealBreakdown from "@/components/MealBreakdown";
 import IntroductionModal from "@/components/IntroductionModal";
 import { User, Session } from "@supabase/supabase-js";
 import { getMealTypeKeys } from "@/lib/mealTypes";
+import { routes } from "@/lib/routes";
 
 interface FoodEntry {
   id: string;
@@ -65,7 +66,7 @@ const Index = () => {
         setSession(session);
         setUser(session?.user ?? null);
         if (!session) {
-          navigate("/auth");
+          navigate(routes.auth);
         }
       }
     );
@@ -75,7 +76,7 @@ const Index = () => {
       setUser(session?.user ?? null);
       setLoading(false);
       if (!session) {
-        navigate("/auth");
+        navigate(routes.auth);
       }
     });
 
@@ -109,7 +110,7 @@ const Index = () => {
     if (!error && data) {
       // Redirect to onboarding if not completed
       if (!data.onboarding_completed) {
-        navigate("/");
+        navigate(routes.home);
         return;
       }
       setProfile(data);
@@ -206,7 +207,7 @@ const Index = () => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate("/auth");
+    navigate(routes.auth);
   };
 
   if (loading) {
@@ -274,14 +275,14 @@ const Index = () => {
       <header className="bg-card/80 backdrop-blur-lg border-b border-border sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+            <Button variant="ghost" size="icon" onClick={() => navigate(routes.home)}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <h1 className="text-xl font-bold text-foreground">Food Tracker</h1>
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
+            <Button variant="ghost" size="icon" onClick={() => navigate(routes.profile)}>
               <UserIcon className="w-5 h-5" />
             </Button>
           </div>

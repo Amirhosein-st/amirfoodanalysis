@@ -13,6 +13,7 @@ import Diet from "./pages/Diet";
 import Install from "./pages/Install";
 import WeeklyChallenge from "./pages/WeeklyChallenge";
 import NotFound from "./pages/NotFound";
+import { routes } from "@/lib/routes";
 
 const queryClient = new QueryClient();
 
@@ -24,14 +25,14 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/tracker" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="/diet" element={<Diet />} />
-            <Route path="/install" element={<Install />} />
-            <Route path="/weekly-challenge" element={<WeeklyChallenge />} />
+            <Route path={routes.home} element={<Home />} />
+            <Route path={routes.tracker} element={<Index />} />
+            <Route path={routes.auth} element={<Auth />} />
+            <Route path={routes.profile} element={<Profile />} />
+            <Route path={routes.onboarding} element={<Onboarding />} />
+            <Route path={routes.diet} element={<Diet />} />
+            <Route path={routes.install} element={<Install />} />
+            <Route path={routes.weeklyChallenge} element={<WeeklyChallenge />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

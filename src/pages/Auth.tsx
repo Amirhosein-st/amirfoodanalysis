@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Leaf, Mail, Lock, User, ArrowRight } from "lucide-react";
 import { z } from "zod";
+import { routes } from "@/lib/routes";
 
 const authSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -64,13 +65,13 @@ const Auth = () => {
           password,
         });
         if (error) throw error;
-        navigate("/");
+        navigate(routes.home);
       } else {
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`,
+            emailRedirectTo: `${window.location.origin}${routes.home}`,
             data: {
               full_name: fullName,
             },
@@ -81,7 +82,7 @@ const Auth = () => {
           title: "Welcome!",
           description: "Your account has been created successfully.",
         });
-        navigate("/onboarding");
+        navigate(routes.onboarding);
       }
     } catch (error: any) {
       toast({

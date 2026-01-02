@@ -11,6 +11,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import IntroductionModal from "@/components/IntroductionModal";
 import AddWeeklyFoodDialog from "@/components/AddWeeklyFoodDialog";
 import { getMealTypeLabels } from "@/lib/mealTypes";
+import { routes } from "@/lib/routes";
 
 interface FoodLog {
   id: string;
@@ -43,13 +44,13 @@ const WeeklyChallenge = () => {
 
   useEffect(() => {
     // Feature disabled: redirect any direct access back to home
-    navigate("/", { replace: true });
+    navigate(routes.home, { replace: true });
   }, [navigate]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session?.user) {
-        navigate("/auth");
+        navigate(routes.auth);
         return;
       }
       setUser(session.user);
@@ -177,7 +178,7 @@ const WeeklyChallenge = () => {
 
       if (error) throw error;
 
-      navigate("/diet", { state: { diet: data.diet, isPersonalized: true } });
+      navigate(routes.diet, { state: { diet: data.diet, isPersonalized: true } });
     } catch (error) {
       console.error("Error generating diet:", error);
       toast({
@@ -222,7 +223,7 @@ const WeeklyChallenge = () => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate("/auth");
+    navigate(routes.auth);
   };
 
   if (loading) {
@@ -264,14 +265,14 @@ const WeeklyChallenge = () => {
       <header className="sticky top-0 bg-card/80 backdrop-blur-lg border-b border-border z-10 w-full">
         <div className="max-w-[1400px] mx-auto p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+            <Button variant="ghost" size="icon" onClick={() => navigate(routes.home)}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <h1 className="text-xl font-bold text-foreground">7-Day Challenge</h1>
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
+            <Button variant="ghost" size="icon" onClick={() => navigate(routes.profile)}>
               <UserIcon className="w-5 h-5" />
             </Button>
             <AlertDialog>

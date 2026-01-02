@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Leaf, ArrowLeft, ArrowRight, Check, Plus, X, Loader2 } from "lucide-react";
 import { User } from "@supabase/supabase-js";
+import { routes } from "@/lib/routes";
 
 interface OnboardingData {
   weight: number | null;
@@ -74,7 +75,7 @@ const Onboarding = () => {
       (event, session) => {
         setUser(session?.user ?? null);
         if (!session) {
-          navigate("/auth");
+          navigate(routes.auth);
         }
       }
     );
@@ -83,7 +84,7 @@ const Onboarding = () => {
       setUser(session?.user ?? null);
       setLoading(false);
       if (!session) {
-        navigate("/auth");
+        navigate(routes.auth);
       }
     });
 
@@ -249,7 +250,7 @@ const Onboarding = () => {
         description: "Your health profile has been saved.",
       });
 
-      navigate("/");
+      navigate(routes.home);
     } catch (err: any) {
       toast({
         title: "Error",
