@@ -276,7 +276,7 @@ const AddFoodDialog = ({ onFoodAdded, mealsPerDay }: AddFoodDialogProps) => {
             <Button
               type="button"
               variant="outline"
-              className="flex-1 gap-2"
+              className="flex-1 gap-2 min-[1030px]:hidden"
               onClick={() => cameraInputRef.current?.click()}
               disabled={analyzing}
             >

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Utensils, Sparkles, Loader2, Calendar } from "lucide-react";
+import { Utensils, Sparkles, Loader2, Calendar, User as UserIcon } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useToast } from "@/hooks/use-toast";
 import { User } from "@supabase/supabase-js";
@@ -14,7 +14,8 @@ const Home = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [generatingDiet, setGeneratingDiet] = useState(false);
-  const [profile, setProfile] = useState<{ full_name: string | null } | null>(null);
+  const [profile, setProfile] = useState<{ full_name: string | null; username: string | null } | null>(null);
+  const [hasSelectedMeals, setHasSelectedMeals] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -36,6 +37,13 @@ const Home = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+    const storageKey = `selectedMeals_${today}`;
+    const saved = localStorage.getItem(storageKey);
+    setHasSelectedMeals(!!saved);
+  }, []);
+
   const checkOnboardingAndFetchProfile = async (userId: string) => {
     try {
       // Check if user has completed onboarding
@@ -53,7 +61,7 @@ const Home = () => {
       // Fetch profile for greeting
       const { data: profileData } = await supabase
         .from("profiles")
-        .select("full_name")
+        .select("full_name, username")
         .eq("user_id", userId)
         .single();
 
@@ -67,6 +75,15 @@ const Home = () => {
 
   const handleGenerateDiet = async () => {
     if (!user) return;
+
+      if (hasSelectedMeals) {
+        toast({
+          title: "You have a diet plan for today!",
+          description: "Navigating to your tracker to view today's meal plan.",
+        });
+        navigate("/tracker", { state: { fromDietPlan: true } });
+        return;
+    }
 
     setGeneratingDiet(true);
     try {
@@ -117,61 +134,72 @@ const Home = () => {
     );
   }
 
-  const firstName = profile?.full_name?.split(" ")[0] || "there";
+  const displayName = profile?.username?.trim()
+    || profile?.full_name?.split(" ")[0]
+    || "there";
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="p-4 flex items-center justify-between">
-        <h1 className="text-xl font-bold text-foreground">Rima Food Tracker</h1>
-        <ThemeToggle />
+      <header className="bg-card/80 backdrop-blur-lg border-b border-border sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <h1 className="text-xl font-bold text-foreground">Rima Food Tracker</h1>
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
+              <UserIcon className="w-5 h-5" />
+            </Button>
+          </div>
+        </div>
       </header>
 
       <main className="px-4 pb-8 pt-8 flex flex-col items-center justify-center min-h-[calc(100vh-80px)]">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-foreground mb-2">
-            Hey {firstName}! 👋
+            Hey {displayName}! 👋
           </h2>
           <p className="text-muted-foreground">
             What would you like to do today?
           </p>
         </div>
 
-        <div className="grid gap-4 w-full max-w-md">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-[1400px]">
           <Card 
-            className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-primary/50"
-            onClick={() => navigate("/tracker")}
+            className="relative overflow-hidden cursor-pointer border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card hover:border-primary/50 transition-all duration-300 hover:shadow-elevated hover:-translate-y-1 group"
+            onClick={() => navigate("/tracker", { state: { fromDietPlan: false } })}
           >
-            <CardHeader className="pb-2">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                <Utensils className="w-6 h-6 text-primary" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <CardHeader className="pb-4">
+              <div className="w-14 h-14 rounded-2xl gradient-primary shadow-glow flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Utensils className="w-7 h-7 text-primary-foreground" />
               </div>
-              <CardTitle>Track Food</CardTitle>
-              <CardDescription>
-                Log your meals and track your daily calories
+              <CardTitle className="text-xl">Track Food</CardTitle>
+              <CardDescription className="text-base line-clamp-2">
+                Log your meals and track your daily calories with our easy-to-use food tracker.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button className="w-full" variant="outline">
+              <Button className="w-full group-hover:gradient-primary group-hover:text-primary-foreground transition-all duration-300" variant="secondary">
                 Go to Tracker
               </Button>
             </CardContent>
           </Card>
 
           <Card 
-            className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-primary/50"
+            className="relative overflow-hidden cursor-pointer border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card hover:border-primary/50 transition-all duration-300 hover:shadow-elevated hover:-translate-y-1 group"
             onClick={generatingDiet ? undefined : handleGenerateDiet}
           >
-            <CardHeader className="pb-2">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                <Sparkles className="w-6 h-6 text-primary" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <CardHeader className="pb-4">
+              <div className="w-14 h-14 rounded-2xl gradient-primary shadow-glow flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Sparkles className="w-7 h-7 text-primary-foreground" />
               </div>
-              <CardTitle>Get AI Diet Plan</CardTitle>
-              <CardDescription>
-                Generate a personalized diet based on your health profile
+              <CardTitle className="text-xl">AI Diet Plan</CardTitle>
+              <CardDescription className="text-base line-clamp-2">
+                Generate a personalized diet plan tailored to your unique health profile and goals.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button className="w-full" disabled={generatingDiet}>
+              <Button className="w-full group-hover:gradient-primary group-hover:text-primary-foreground transition-all duration-300" variant="secondary" disabled={generatingDiet}>
                 {generatingDiet ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -185,21 +213,21 @@ const Home = () => {
           </Card>
 
           <Card 
-            className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-primary/50"
-            onClick={() => navigate("/weekly-challenge")}
+            className="relative overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm opacity-70"
           >
-            <CardHeader className="pb-2">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                <Calendar className="w-6 h-6 text-primary" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <CardHeader className="pb-4">
+              <div className="w-14 h-14 rounded-2xl gradient-primary shadow-glow flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Calendar className="w-7 h-7 text-primary-foreground" />
               </div>
-              <CardTitle>7-Day Challenge</CardTitle>
-              <CardDescription>
-                Log your meals for 7 days and get a unique AI diet plan based on your eating habits
+              <CardTitle className="text-xl">7-Day Challenge</CardTitle>
+              <CardDescription className="text-base line-clamp-2">
+                Coming soon — stay tuned to build healthy habits and get insights into your eating patterns.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button className="w-full" variant="outline">
-                Start Challenge
+              <Button className="w-full" variant="secondary" disabled>
+                Coming soon
               </Button>
             </CardContent>
           </Card>

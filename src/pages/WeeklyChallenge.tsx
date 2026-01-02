@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Check, Loader2, Plus, Sparkles, Trash2, X } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { ArrowLeft, Check, Loader2, LogOut, Plus, Sparkles, Trash2, X, User as UserIcon, Calendar, Target, Trophy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { User } from "@supabase/supabase-js";
 import ThemeToggle from "@/components/ThemeToggle";
+import IntroductionModal from "@/components/IntroductionModal";
 import AddWeeklyFoodDialog from "@/components/AddWeeklyFoodDialog";
 import { getMealTypeLabels } from "@/lib/mealTypes";
 
@@ -38,6 +40,11 @@ const WeeklyChallenge = () => {
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMealType, setDialogMealType] = useState("breakfast");
+
+  useEffect(() => {
+    // Feature disabled: redirect any direct access back to home
+    navigate("/", { replace: true });
+  }, [navigate]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -213,6 +220,11 @@ const WeeklyChallenge = () => {
     setFoodLogs((prev) => [...prev, food]);
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/auth");
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -223,19 +235,69 @@ const WeeklyChallenge = () => {
 
   const daysCompleted = getDayProgress();
 
+  const introSteps = [
+    {
+      icon: <Calendar className="w-8 h-8 text-primary" />,
+      title: "7-Day Food Journey",
+      description: "Track your meals for 7 consecutive days. You'll unlock each new day by logging at least 2 meals from the previous day.",
+    },
+    {
+      icon: <Target className="w-8 h-8 text-primary" />,
+      title: "Log Your Meals",
+      description: "For each day, add photos or manually log your breakfast, lunch, dinner, and snacks. Our AI will analyze the nutritional content.",
+    },
+    {
+      icon: <Trophy className="w-8 h-8 text-primary" />,
+      title: "Get Personalized Diet",
+      description: "Complete all 7 days to receive a customized diet plan based on your eating habits, preferences, and health goals.",
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-background max-w-[1400px] mx-auto">
-      <header className="p-4 flex items-center justify-between border-b border-border">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="text-xl font-bold text-foreground">7-Day Challenge</h1>
+    <div className="min-h-screen bg-background flex flex-col items-center">
+      <IntroductionModal
+        storageKey="weekly-challenge-intro-seen"
+        title="7-Day Challenge 🏆"
+        description="Complete this challenge to unlock your personalized diet plan"
+        steps={introSteps}
+      />
+      <header className="sticky top-0 bg-card/80 backdrop-blur-lg border-b border-border z-10 w-full">
+        <div className="max-w-[1400px] mx-auto p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <h1 className="text-xl font-bold text-foreground">7-Day Challenge</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
+              <UserIcon className="w-5 h-5" />
+            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <LogOut className="w-5 h-5" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Log out?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    You will be signed out of your account and returned to the login screen.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleLogout}>Log out</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </div>
-        <ThemeToggle />
       </header>
 
-      <main className="p-4 pb-24">
+      <main className="p-4 pb-24 w-full max-w-[1400px]">
         {/* Progress */}
         <Card className="mb-6">
           <CardHeader className="pb-2">
@@ -383,10 +445,10 @@ const WeeklyChallenge = () => {
       </main>
 
       {/* Fixed Bottom Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t border-border">
-        <div className="max-w-[1400px] mx-auto">
+      <div className="fixed bottom-0 left-0 right-0 h-[73px] flex items-center px-4 bg-background border-t border-border z-10">
+        <div className="w-full max-w-[1400px] mx-auto">
           <Button
-            className="w-full"
+            className="w-full h-[40px]"
             size="lg"
             onClick={handleGeneratePersonalizedDiet}
             disabled={daysCompleted < 7 || generatingDiet}

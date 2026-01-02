@@ -58,18 +58,20 @@ const Install = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="p-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="text-xl font-bold text-foreground">Install App</h1>
+    <div className="min-h-screen bg-background flex flex-col items-center">
+      <header className="sticky top-0 bg-card/80 backdrop-blur-lg border-b border-border z-10 w-full">
+        <div className="max-w-[1400px] mx-auto p-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <h1 className="text-xl font-bold text-foreground">Install App</h1>
+          </div>
+          <ThemeToggle />
         </div>
-        <ThemeToggle />
       </header>
 
-      <main className="px-4 pb-8 pt-4 max-w-md mx-auto space-y-6">
+      <main className="px-4 pb-8 pt-4 max-w-md mx-auto space-y-6 w-full">
         {/* App Preview */}
         <div className="text-center">
           <div className="w-24 h-24 rounded-2xl bg-primary/10 mx-auto mb-4 flex items-center justify-center overflow-hidden">
@@ -166,7 +168,7 @@ const Install = () => {
                   Full screen experience
                 </li>
               </ul>
-              <Button onClick={handleInstall} className="w-full" size="lg">
+              <Button onClick={handleInstall} className="w-full bg-[hsl(var(--primary)/0.9)] hover:bg-primary text-primary-foreground" size="lg">
                 <Download className="w-4 h-4 mr-2" />
                 Install App
               </Button>
