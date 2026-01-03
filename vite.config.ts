@@ -7,7 +7,7 @@ import { VitePWA } from "vite-plugin-pwa";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   // Deploying to GitHub Pages at the domain root, so keep a root base path in all modes
-  const base = "/";
+  const base = mode === "development" ? "/" : "/amirfoodanalysis/";
 
   return {
     base,
@@ -19,6 +19,7 @@ export default defineConfig(({ mode }) => {
       react(),
       mode === "development" && componentTagger(),
       VitePWA({
+        disable: false,
         registerType: "autoUpdate",
         includeAssets: ["logo.png"],
         manifest: {

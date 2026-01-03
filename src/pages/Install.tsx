@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download, Share, Plus, ArrowLeft, Check, Smartphone } from "lucide-react";
-import ThemeToggle from "@/components/ThemeToggle";
+import { Download, Share, Plus, Check, Smartphone } from "lucide-react";
 import { routes } from "@/lib/routes";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -59,24 +58,12 @@ const Install = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center">
-      <header className="sticky top-0 bg-card/80 backdrop-blur-lg border-b border-border z-10 w-full">
-        <div className="max-w-[1400px] mx-auto p-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            <h1 className="text-xl font-bold text-foreground">Install App</h1>
-          </div>
-          <ThemeToggle />
-        </div>
-      </header>
-
-      <main className="px-4 pb-8 pt-4 max-w-md mx-auto space-y-6 w-full">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center">
+      <main className="px-4 pb-8 pt-8 max-w-md mx-auto space-y-6 w-full">
         {/* App Preview */}
         <div className="text-center">
           <div className="w-24 h-24 rounded-2xl bg-primary/10 mx-auto mb-4 flex items-center justify-center overflow-hidden">
-            <img src="/pwa-192x192.png" alt="Rima Food Tracker" className="w-full h-full object-cover" />
+            <img src="/logo.png" alt="Rima Food Tracker" className="w-full h-full object-cover" />
           </div>
           <h2 className="text-2xl font-bold text-foreground">Rima Food Tracker</h2>
           <p className="text-muted-foreground">Calorie & Diet Tracker</p>
