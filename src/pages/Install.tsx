@@ -12,6 +12,7 @@ interface BeforeInstallPromptEvent extends Event {
 
 const Install = () => {
   const navigate = useNavigate();
+  const logoUrl = new URL("/logo.png", import.meta.env.BASE_URL).href;
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
@@ -63,7 +64,7 @@ const Install = () => {
         <div className="text-center">
           <div className="w-24 h-24 rounded-2xl bg-primary/10 mx-auto mb-4 flex items-center justify-center">
             <img
-              src="/logo.png"
+              src={logoUrl}
               alt="Rima Food Tracker"
               className="w-20 h-20 object-contain drop-shadow-sm"
               loading="lazy"
