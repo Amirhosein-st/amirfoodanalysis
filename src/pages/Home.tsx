@@ -8,6 +8,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { useToast } from "@/hooks/use-toast";
 import { User } from "@supabase/supabase-js";
 import { routes } from "@/lib/routes";
+import { getAssetUrl } from "@/lib/utils";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ const Home = () => {
   const [generatingDiet, setGeneratingDiet] = useState(false);
   const [profile, setProfile] = useState<{ full_name: string | null; username: string | null } | null>(null);
   const [hasSelectedMeals, setHasSelectedMeals] = useState(false);
+  const logoUrl = getAssetUrl("logo.png");
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -143,7 +145,14 @@ const Home = () => {
     <div className="min-h-screen bg-background">
       <header className="bg-card/80 backdrop-blur-lg border-b border-border sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-foreground">Rima Food Tracker</h1>
+          <div className="flex items-center gap-3">
+            <img
+              src={logoUrl}
+              alt="Rima Food Tracker logo"
+              className="w-8 h-8 rounded-lg object-cover"
+            />
+            <h1 className="text-xl font-bold text-foreground">Rima Food Tracker</h1>
+          </div>
           <div className="flex items-center gap-1">
             <ThemeToggle />
             <Button variant="ghost" size="icon" onClick={() => navigate(routes.profile)}>

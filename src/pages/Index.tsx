@@ -9,6 +9,7 @@ import AddFoodDialog from "@/components/AddFoodDialog";
 import ThemeToggle from "@/components/ThemeToggle";
 import MealBreakdown from "@/components/MealBreakdown";
 import IntroductionModal from "@/components/IntroductionModal";
+import KcalRemainingModal from "@/components/KcalRemainingModal";
 import { User, Session } from "@supabase/supabase-js";
 import { getMealTypeKeys } from "@/lib/mealTypes";
 import { routes } from "@/lib/routes";
@@ -56,6 +57,8 @@ const Index = () => {
   const [savedDietPlan, setSavedDietPlan] = useState<SavedDietPlan | null>(null);
   const [selectedMeals, setSelectedMeals] = useState<SelectedMeal[]>([]);
   const [isMealPlanCollapsed, setIsMealPlanCollapsed] = useState(true);
+  const [showKcalModal, setShowKcalModal] = useState(false);
+  const [kcalRemaining, setKcalRemaining] = useState<number | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const fromDietPlan = (location.state as { fromDietPlan?: boolean })?.fromDietPlan ?? false;
@@ -188,7 +191,7 @@ const Index = () => {
     const today = new Date().toISOString().split("T")[0];
     const storageKey = `selectedMeals_${today}`;
     const saved = localStorage.getItem(storageKey);
-    
+
     if (saved) {
         try {
           const meals = JSON.parse(saved);
@@ -205,9 +208,31 @@ const Index = () => {
     }
   }, []);
 
+  // Check if we should show kcal remaining modal (only when coming from home)
+  useEffect(() => {
+    if (!fromDietPlan && user) {
+      const today = new Date().toISOString().split("T")[0];
+      const kcalKey = `kcal_remaining_${today}`;
+      const savedKcal = localStorage.getItem(kcalKey);
+
+      if (!savedKcal) {
+        setShowKcalModal(true);
+      } else {
+        setKcalRemaining(parseInt(savedKcal));
+      }
+    }
+  }, [fromDietPlan, user]);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate(routes.auth);
+  };
+
+  const handleSaveKcalRemaining = (kcal: number) => {
+    const today = new Date().toISOString().split("T")[0];
+    const kcalKey = `kcal_remaining_${today}`;
+    localStorage.setItem(kcalKey, kcal.toString());
+    setKcalRemaining(kcal);
   };
 
   if (loading) {
@@ -229,8 +254,8 @@ const Index = () => {
   const totalProtein = foodEntries.reduce((sum, entry) => sum + (entry.protein || 0), 0);
   const totalCarbs = foodEntries.reduce((sum, entry) => sum + (entry.carbs || 0), 0);
   const totalFat = foodEntries.reduce((sum, entry) => sum + (entry.fat || 0), 0);
-  // Use diet plan total calories if available, otherwise fall back to profile goal
-  const goalCalories = savedDietPlan?.total_calories || profile?.daily_calorie_goal || 2000;
+  // Use kcal remaining if set today, otherwise use diet plan total calories, otherwise fall back to profile goal
+  const goalCalories = kcalRemaining || savedDietPlan?.total_calories || profile?.daily_calorie_goal || 2000;
 
   // Get meal types based on user's meals_per_day setting
   const mealsPerDay = healthProfile?.meals_per_day || 4;
@@ -269,6 +294,12 @@ const Index = () => {
         title="Welcome to Food Tracker! 🍽️"
         description="Let's get you started with tracking your daily nutrition"
         steps={introSteps}
+      />
+
+      <KcalRemainingModal
+        isOpen={showKcalModal}
+        onClose={() => setShowKcalModal(false)}
+        onSave={handleSaveKcalRemaining}
       />
 
       {/* Header */}

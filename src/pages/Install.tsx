@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Download, Share, Plus, Check, Smartphone } from "lucide-react";
 import { routes } from "@/lib/routes";
+import { getAssetUrl } from "@/lib/utils";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -12,10 +13,7 @@ interface BeforeInstallPromptEvent extends Event {
 
 const Install = () => {
   const navigate = useNavigate();
-  const basePath = import.meta.env.BASE_URL || "/";
-  const logoUrl = basePath.startsWith("http")
-    ? new URL("logo.png", basePath).href
-    : `${basePath.replace(/\/$/, "")}/logo.png`;
+  const logoUrl = getAssetUrl("logo.png");
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOS, setIsIOS] = useState(false);

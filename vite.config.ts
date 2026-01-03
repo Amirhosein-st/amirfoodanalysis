@@ -6,8 +6,9 @@ import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  // Deploying to GitHub Pages at the domain root, so keep a root base path in all modes
+  // Deploying to GitHub Pages project site, so production builds need the repo name as base
   const base = mode === "development" ? "/" : "/amirfoodanalysis/";
+  const logoAsset = "logo.png";
 
   return {
     base,
@@ -21,7 +22,7 @@ export default defineConfig(({ mode }) => {
       VitePWA({
         disable: false,
         registerType: "autoUpdate",
-        includeAssets: ["logo.png"],
+        includeAssets: [logoAsset],
         manifest: {
           name: "Rima Food Tracker - Calorie & Diet Tracker",
           short_name: "Rima",
@@ -34,12 +35,12 @@ export default defineConfig(({ mode }) => {
           start_url: base,
           icons: [
             {
-              src: "/logo.png",
+              src: logoAsset,
               sizes: "670x670",
               type: "image/png",
             },
             {
-              src: "/logo.png",
+              src: logoAsset,
               sizes: "670x670",
               type: "image/png",
               purpose: "any maskable",

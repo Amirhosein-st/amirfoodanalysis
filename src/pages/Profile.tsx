@@ -329,7 +329,7 @@ const Profile = () => {
 
             {/* Desktop Buttons */}
             <div className="hidden md:flex gap-3">
-              <AlertDialog>
+            <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
                     variant="outline"
@@ -358,7 +358,8 @@ const Profile = () => {
                   <AlertDialogTrigger asChild>
                     <Button
                       variant="destructive"
-                      className="flex-1 gap-2 bg-green-600 text-primary-foreground hover:bg-green-700 h-12"
+                      style={{ marginTop: "5px" }}
+                      className="flex-1 gap-2 bg-green-600 text-primary-foreground hover:bg-green-700 h-10"
                     >
                       <RotateCcw className="w-5 h-5" />
                       Reset Today's Meal Plan
@@ -540,6 +541,8 @@ const Profile = () => {
                   <AlertDialogTrigger asChild>
                     <Button
                       variant="destructive"
+                      size="sm"
+                      style={{ marginTop: "2px" }}
                       className="flex-1 gap-2 bg-green-600 text-primary-foreground hover:bg-green-700"
                     >
                       <RotateCcw className="w-4 h-4" />
