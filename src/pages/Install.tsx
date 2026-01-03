@@ -12,7 +12,10 @@ interface BeforeInstallPromptEvent extends Event {
 
 const Install = () => {
   const navigate = useNavigate();
-  const logoUrl = new URL("/logo.png", import.meta.env.BASE_URL).href;
+  const basePath = import.meta.env.BASE_URL || "/";
+  const logoUrl = basePath.startsWith("http")
+    ? new URL("logo.png", basePath).href
+    : `${basePath.replace(/\/$/, "")}/logo.png`;
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
