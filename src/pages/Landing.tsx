@@ -6,7 +6,6 @@ import {
   Camera,
   Sparkles,
   TrendingUp,
-  Utensils,
   Calendar,
   Shield,
   Zap,
@@ -46,7 +45,9 @@ const Landing = () => {
       icon: Calendar,
       title: "7-Day Wellness Challenge",
       description: "Build healthy eating habits with our structured 7-day program that rewards consistency and progress.",
-      color: "text-orange-600 dark:text-orange-400"
+      color: "text-orange-600 dark:text-orange-400",
+      status: "Coming soon",
+      disabled: true
     }
   ];
 
@@ -121,10 +122,6 @@ const Landing = () => {
                 <Zap className="w-4 h-4" />
                 <span>AI-Powered</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                <span>10,000+ Users</span>
-              </div>
             </div>
           </div>
         </div>
@@ -150,12 +147,20 @@ const Landing = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
-              <Card key={index} className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 bg-card/50 backdrop-blur-sm">
+              <Card
+                key={index}
+                className={`group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 bg-card/50 backdrop-blur-sm ${feature.disabled ? "opacity-60 pointer-events-none cursor-not-allowed" : ""}`}
+              >
                 <CardHeader className="text-center pb-4">
                   <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
                     <feature.icon className={`w-8 h-8 ${feature.color}`} />
                   </div>
                   <CardTitle className="text-xl mb-2">{feature.title}</CardTitle>
+                  {feature.status && (
+                    <Badge variant="secondary" className="mt-1 mx-auto">
+                      {feature.status}
+                    </Badge>
+                  )}
                 </CardHeader>
                 <CardContent>
                   <CardDescription className="text-center text-base leading-relaxed">
@@ -177,7 +182,7 @@ const Landing = () => {
                 Why Choose Rima Food Tracker?
               </h2>
               <p className="text-lg text-muted-foreground mb-8">
-                Join thousands of users who have transformed their relationship with food and achieved their health goals with our intelligent nutrition platform.
+                Join our users who have transformed their relationship with food and achieved their health goals with our intelligent nutrition platform.
               </p>
 
               <div className="space-y-4">
@@ -230,7 +235,7 @@ const Landing = () => {
             Ready to Transform Your Nutrition Journey?
           </h2>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join thousands of users who are already using AI-powered nutrition tracking to achieve their health goals.
+          Join our users who are already using AI-powered nutrition tracking to achieve their health goals.
           </p>
 
           <Button

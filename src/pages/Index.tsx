@@ -320,7 +320,6 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="container mx-auto px-4 py-6 space-y-6 pb-24">
         <CalorieSummary
           totalCalories={totalCalories}
@@ -428,7 +427,7 @@ const Index = () => {
 
       {/* Floating Action Button */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2">
-        <AddFoodDialog onFoodAdded={fetchFoodEntries} mealsPerDay={mealsPerDay} />
+        <AddFoodDialog onFoodAdded={fetchFoodEntries} mealsPerDay={mealsPerDay} showPortionRecommendation={fromDietPlan} />
       </div>
     </div>
   );
