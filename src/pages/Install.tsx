@@ -60,10 +60,14 @@ const Install = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center">
       <main className="px-4 pb-8 pt-8 max-w-md mx-auto space-y-6 w-full">
-        {/* App Preview */}
         <div className="text-center">
-          <div className="w-24 h-24 rounded-2xl bg-primary/10 mx-auto mb-4 flex items-center justify-center overflow-hidden">
-            <img src="/logo.png" alt="Rima Food Tracker" className="w-full h-full object-cover" />
+          <div className="w-24 h-24 rounded-2xl bg-primary/10 mx-auto mb-4 flex items-center justify-center">
+            <img
+              src="/logo.png"
+              alt="Rima Food Tracker"
+              className="w-20 h-20 object-contain drop-shadow-sm"
+              loading="lazy"
+            />
           </div>
           <h2 className="text-2xl font-bold text-foreground">Rima Food Tracker</h2>
           <p className="text-muted-foreground">Calorie & Diet Tracker</p>
