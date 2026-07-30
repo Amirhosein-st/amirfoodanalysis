@@ -263,10 +263,10 @@ const AddWeeklyFoodDialog = ({
                 </Button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 min-[1030px]:grid-cols-1 gap-3">
                 <Button
                   variant="outline"
-                  className="h-12"
+                  className="h-12 min-[1030px]:hidden"
                   onClick={() => cameraInputRef.current?.click()}
                   disabled={isAnalyzing}
                 >

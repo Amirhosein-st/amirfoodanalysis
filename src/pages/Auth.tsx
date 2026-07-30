@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Leaf, Mail, Lock, User, ArrowRight } from "lucide-react";
 import { z } from "zod";
+import { routes } from "@/lib/routes";
+import { getAssetUrl } from "@/lib/utils";
 
 const authSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -26,6 +28,23 @@ const Auth = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
   const { toast } = useToast();
+  const logoUrl = getAssetUrl("logo.png");
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      if (session) {
+        navigate(routes.home, { replace: true });
+      }
+    });
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate(routes.home, { replace: true });
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   const validateForm = () => {
     try {
@@ -64,13 +83,13 @@ const Auth = () => {
           password,
         });
         if (error) throw error;
-        navigate("/");
+        navigate(routes.home);
       } else {
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`,
+            emailRedirectTo: `${window.location.origin}${routes.home}`,
             data: {
               full_name: fullName,
             },
@@ -81,7 +100,7 @@ const Auth = () => {
           title: "Welcome!",
           description: "Your account has been created successfully.",
         });
-        navigate("/onboarding");
+        navigate(routes.onboarding);
       }
     } catch (error: any) {
       toast({
@@ -99,9 +118,11 @@ const Auth = () => {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl gradient-primary shadow-glow mb-4">
-            <Leaf className="w-8 h-8 text-primary-foreground" />
-          </div>
+          <img
+            src={logoUrl}
+            alt="Rima Food Tracker logo"
+            className="mx-auto mb-4 w-14 h-14 rounded-2xl object-cover shadow-md"
+          />
           <h1 className="text-3xl font-bold text-foreground">Rima Food Tracker</h1>
           <p className="text-muted-foreground mt-2">Track your nutrition journey</p>
         </div>
@@ -169,7 +190,7 @@ const Auth = () => {
                 <Input
                   id="password"
                   type="password"
-                  placeholder="••••••••"
+                  placeholder="********"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="pl-10"

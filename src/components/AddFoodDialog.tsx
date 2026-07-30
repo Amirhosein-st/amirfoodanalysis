@@ -39,9 +39,10 @@ interface MealCalorieTarget {
 interface AddFoodDialogProps {
   onFoodAdded: () => void;
   mealsPerDay: number;
+  showPortionRecommendation?: boolean;
 }
 
-const AddFoodDialog = ({ onFoodAdded, mealsPerDay }: AddFoodDialogProps) => {
+const AddFoodDialog = ({ onFoodAdded, mealsPerDay, showPortionRecommendation = true }: AddFoodDialogProps) => {
   const mealTypes = getMealTypesForCount(mealsPerDay);
   const defaultMealType = mealTypes[0]?.key || "breakfast";
   
@@ -276,7 +277,7 @@ const AddFoodDialog = ({ onFoodAdded, mealsPerDay }: AddFoodDialogProps) => {
             <Button
               type="button"
               variant="outline"
-              className="flex-1 gap-2"
+              className="flex-1 gap-2 min-[1030px]:hidden"
               onClick={() => cameraInputRef.current?.click()}
               disabled={analyzing}
             >
@@ -407,7 +408,7 @@ const AddFoodDialog = ({ onFoodAdded, mealsPerDay }: AddFoodDialogProps) => {
           </div>
 
           {/* Portion Recommendation */}
-          {portionRecommendation && portionRecommendation.show && (
+          {showPortionRecommendation && portionRecommendation && portionRecommendation.show && (
             <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 space-y-2">
               <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
                 <AlertTriangle className="w-4 h-4" />

@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Leaf, ArrowLeft, ArrowRight, Check, Plus, X, Loader2 } from "lucide-react";
 import { User } from "@supabase/supabase-js";
+import { routes } from "@/lib/routes";
 
 interface OnboardingData {
   weight: number | null;
@@ -74,7 +75,7 @@ const Onboarding = () => {
       (event, session) => {
         setUser(session?.user ?? null);
         if (!session) {
-          navigate("/auth");
+          navigate(routes.auth);
         }
       }
     );
@@ -83,7 +84,7 @@ const Onboarding = () => {
       setUser(session?.user ?? null);
       setLoading(false);
       if (!session) {
-        navigate("/auth");
+        navigate(routes.auth);
       }
     });
 
@@ -249,7 +250,7 @@ const Onboarding = () => {
         description: "Your health profile has been saved.",
       });
 
-      navigate("/");
+      navigate(routes.home);
     } catch (err: any) {
       toast({
         title: "Error",
@@ -286,6 +287,7 @@ const Onboarding = () => {
                 placeholder="70"
                 value={data.weight || ""}
                 onChange={(e) => updateData("weight", parseFloat(e.target.value) || null)}
+                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleNext())}
                 min={30}
                 max={250}
                 className="text-lg h-14"
@@ -307,6 +309,7 @@ const Onboarding = () => {
                 placeholder="65"
                 value={data.targetWeight || ""}
                 onChange={(e) => updateData("targetWeight", parseFloat(e.target.value) || null)}
+                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleNext())}
                 min={30}
                 max={250}
                 className="text-lg h-14"
@@ -328,6 +331,7 @@ const Onboarding = () => {
                 placeholder="170"
                 value={data.height || ""}
                 onChange={(e) => updateData("height", parseFloat(e.target.value) || null)}
+                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleNext())}
                 min={120}
                 max={230}
                 className="text-lg h-14"
@@ -349,6 +353,7 @@ const Onboarding = () => {
                 placeholder="30"
                 value={data.age || ""}
                 onChange={(e) => updateData("age", parseInt(e.target.value) || null)}
+                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleNext())}
                 min={10}
                 max={100}
                 className="text-lg h-14"
@@ -383,6 +388,7 @@ const Onboarding = () => {
                 placeholder="Your nationality"
                 value={data.nationality && !commonNationalities.includes(data.nationality) ? data.nationality : ""}
                 onChange={(e) => updateData("nationality", e.target.value || null)}
+                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleNext())}
                 className="text-lg h-14"
               />
             </div>
@@ -531,6 +537,7 @@ const Onboarding = () => {
                 step="0.5"
                 value={data.sleepHours ?? ""}
                 onChange={(e) => updateData("sleepHours", parseFloat(e.target.value) ?? null)}
+                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleNext())}
                 min={0}
                 max={16}
                 className="text-lg h-14"
@@ -553,6 +560,7 @@ const Onboarding = () => {
                 step="0.5"
                 value={data.waterIntake ?? ""}
                 onChange={(e) => updateData("waterIntake", parseFloat(e.target.value) ?? null)}
+                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleNext())}
                 min={0}
                 max={10}
                 className="text-lg h-14"
