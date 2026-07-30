@@ -63,7 +63,7 @@ const Landing = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       {/* Header */}
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-white/95 backdrop-blur dark:bg-[#0f1f1b]">
+      <header className="safe-area-header fixed inset-x-0 top-0 z-50 border-b border-border bg-white/95 backdrop-blur dark:bg-[#0f1f1b]">
         <div className="container mx-auto flex items-center justify-between gap-2 px-3 py-3 sm:gap-4 sm:px-4 sm:py-4">
           <div className="flex min-w-0 shrink-0 items-center gap-2 sm:gap-3">
             <img

@@ -259,7 +259,7 @@ const Profile = () => {
   return (
     <div className="min-h-screen gradient-hero flex flex-col">
       {/* Header */}
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
+      <header className="safe-area-header fixed inset-x-0 top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={() => navigate(routes.home)}>

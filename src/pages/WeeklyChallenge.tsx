@@ -271,7 +271,7 @@ const WeeklyChallenge = () => {
         description="Complete this challenge to unlock your personalized diet plan"
         steps={introSteps}
       />
-      <header className="fixed inset-x-0 top-0 z-50 w-full border-b border-border bg-card/80 backdrop-blur-lg">
+      <header className="safe-area-header fixed inset-x-0 top-0 z-50 w-full border-b border-border bg-card/80 backdrop-blur-lg">
         <div className="max-w-[1400px] mx-auto p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={() => navigate(routes.home)}>
