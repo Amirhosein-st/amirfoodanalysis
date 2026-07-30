@@ -168,11 +168,20 @@ const WeeklyChallenge = () => {
         return;
       }
 
+      const { data: previousPlan } = await supabase
+        .from("saved_diet_plans")
+        .select("meals")
+        .eq("user_id", user.id)
+        .order("updated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
       const { data, error } = await supabase.functions.invoke("generate-diet", {
         body: { 
           healthProfile,
           weeklyFoodLogs: foodLogs,
-          isPersonalized: true
+          isPersonalized: true,
+          previousMeals: Array.isArray(previousPlan?.meals) ? previousPlan.meals : [],
         },
       });
 

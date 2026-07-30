@@ -106,9 +106,20 @@ const Home = () => {
         return;
       }
 
+      const { data: previousPlan } = await supabase
+        .from("saved_diet_plans")
+        .select("meals")
+        .eq("user_id", user.id)
+        .order("updated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
       // Call edge function to generate diet
       const { data, error } = await supabase.functions.invoke("generate-diet", {
-        body: { healthProfile },
+        body: {
+          healthProfile,
+          previousMeals: Array.isArray(previousPlan?.meals) ? previousPlan.meals : [],
+        },
       });
 
       if (error) {
@@ -174,10 +185,10 @@ const Home = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-[1400px]">
           <Card 
-            className="relative overflow-hidden cursor-pointer border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card hover:border-primary/50 transition-all duration-300 hover:shadow-elevated hover:-translate-y-1 group"
+            className="relative overflow-hidden cursor-pointer border-2 border-primary/20 bg-card shadow-lg shadow-foreground/10 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/15 dark:border-border/60 dark:bg-card/70 dark:shadow-soft transition-all duration-300 hover:-translate-y-1 group"
             onClick={() => navigate(routes.tracker, { state: { fromDietPlan: false } })}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/5 opacity-40 group-hover:opacity-100 dark:opacity-0 dark:group-hover:opacity-100 transition-opacity" />
             <CardHeader className="pb-4">
               <div className="w-14 h-14 rounded-2xl gradient-primary shadow-glow flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                 <Utensils className="w-7 h-7 text-primary-foreground" />
@@ -195,10 +206,10 @@ const Home = () => {
           </Card>
 
           <Card 
-            className="relative overflow-hidden cursor-pointer border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card hover:border-primary/50 transition-all duration-300 hover:shadow-elevated hover:-translate-y-1 group"
+            className="relative overflow-hidden cursor-pointer border-2 border-primary/20 bg-card shadow-lg shadow-foreground/10 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/15 dark:border-border/60 dark:bg-card/70 dark:shadow-soft transition-all duration-300 hover:-translate-y-1 group"
             onClick={generatingDiet ? undefined : handleGenerateDiet}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/5 opacity-40 group-hover:opacity-100 dark:opacity-0 dark:group-hover:opacity-100 transition-opacity" />
             <CardHeader className="pb-4">
               <div className="w-14 h-14 rounded-2xl gradient-primary shadow-glow flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                 <Sparkles className="w-7 h-7 text-primary-foreground" />
@@ -223,9 +234,9 @@ const Home = () => {
           </Card>
 
           <Card 
-            className="relative overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm opacity-70"
+            className="relative overflow-hidden border-2 border-border bg-card shadow-md shadow-foreground/10 opacity-70 dark:border-border/60 dark:bg-card/70 dark:shadow-soft"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-40 dark:opacity-0" />
             <CardHeader className="pb-4">
               <div className="w-14 h-14 rounded-2xl gradient-primary shadow-glow flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                 <Calendar className="w-7 h-7 text-primary-foreground" />

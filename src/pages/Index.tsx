@@ -10,6 +10,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import MealBreakdown from "@/components/MealBreakdown";
 import IntroductionModal from "@/components/IntroductionModal";
 import KcalRemainingModal from "@/components/KcalRemainingModal";
+import RecipeViewerButton from "@/components/RecipeViewerButton";
 import { User, Session } from "@supabase/supabase-js";
 import { getMealTypeKeys } from "@/lib/mealTypes";
 import { routes } from "@/lib/routes";
@@ -41,11 +42,44 @@ interface SavedDietPlan {
 
 interface SelectedMeal {
   name: string;
+  optionName?: string;
   time: string;
   calories: number;
   description: string;
   foods: string[];
 }
+
+const getMealFoodTitle = (meal: SelectedMeal) => {
+  if (meal.optionName?.trim()) return meal.optionName.trim();
+
+  const description = meal.description.toLowerCase();
+  if (description.includes("ghormeh sabzi") || description.includes("persian herb stew")) {
+    return "Ghormeh Sabzi with Brown Rice";
+  }
+  if (
+    description.includes("iranian breakfast")
+    && description.includes("barbari")
+    && (description.includes("feta") || description.includes("cheese"))
+  ) {
+    return "Naan-o Panir-o Gerdoo";
+  }
+  if (description.includes("platter of fresh iranian herbs")) {
+    return "Sabzi Khordan with Cheese and Sangak";
+  }
+
+  const likelyDish = meal.foods.find((food) =>
+    food.includes("(") || food.includes(" with ") || food.includes(" soup") || food.includes(" stew")
+  ) || meal.foods[0];
+
+  if (likelyDish) {
+    return likelyDish
+      .replace(/^\d+(?:[./]\d+)?\s*(?:cups?|tbsp|tsp|g|kg|oz|pieces?|slices?)?\s*/i, "")
+      .replace(/\s*\([^)]*\)\s*$/, "")
+      .trim();
+  }
+
+  return `${meal.name} meal`;
+};
 
 const Index = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -357,11 +391,16 @@ const Index = () => {
                 {selectedMeals.map((meal, index) => (
                   <div
                     key={index}
-                    className="bg-card rounded-2xl shadow-soft p-4 border border-border"
+                    className="flex flex-col bg-card rounded-2xl shadow-soft p-4 border border-border"
                   >
                     <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h3 className="font-semibold text-foreground">{meal.name}</h3>
+                      <div className="min-w-0 pr-4">
+                        <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-primary">
+                          {meal.name}
+                        </p>
+                        <h3 className="break-words text-lg font-semibold leading-snug text-foreground">
+                          {getMealFoodTitle(meal)}
+                        </h3>
                         <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
                           <Clock className="w-3 h-3" />
                           {meal.time}
@@ -387,6 +426,14 @@ const Index = () => {
                         ))}
                       </div>
                     )}
+                    <div className="mt-auto pt-1">
+                      <RecipeViewerButton
+                        name={getMealFoodTitle(meal)}
+                        description={meal.description}
+                        foods={meal.foods || []}
+                        calories={meal.calories}
+                      />
+                    </div>
                   </div>
                 ))}
               </div>

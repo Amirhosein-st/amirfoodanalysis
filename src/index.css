@@ -37,6 +37,11 @@
 
     --radius: 0.75rem;
 
+    /* Scrollbars */
+    --scrollbar-track: 45 24% 94%;
+    --scrollbar-thumb: 158 42% 48%;
+    --scrollbar-thumb-hover: 158 64% 36%;
+
     /* Custom tokens */
     --gradient-primary: linear-gradient(135deg, hsl(158, 64%, 42%), hsl(158, 64%, 52%));
     --gradient-hero: linear-gradient(180deg, hsl(45, 30%, 98%) 0%, hsl(158, 30%, 95%) 100%);
@@ -85,6 +90,10 @@
     --input: 160 20% 20%;
     --ring: 158 64% 48%;
 
+    --scrollbar-track: 160 26% 10%;
+    --scrollbar-thumb: 158 52% 38%;
+    --scrollbar-thumb-hover: 158 64% 52%;
+
     --gradient-primary: linear-gradient(135deg, hsl(158, 64%, 48%), hsl(158, 64%, 58%));
     --gradient-hero: linear-gradient(180deg, hsl(160, 30%, 8%) 0%, hsl(160, 25%, 12%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(160, 25%, 14%) 0%, hsl(160, 25%, 10%) 100%);
@@ -106,23 +115,60 @@
 @layer base {
   * {
     @apply border-border;
+    scrollbar-color: hsl(var(--scrollbar-thumb)) hsl(var(--scrollbar-track));
+    scrollbar-width: thin;
+  }
+
+  *::-webkit-scrollbar {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: hsl(var(--scrollbar-track));
+  }
+
+  *::-webkit-scrollbar-thumb {
+    min-height: 2.5rem;
+    border: 0.2rem solid hsl(var(--scrollbar-track));
+    border-radius: 9999px;
+    background: hsl(var(--scrollbar-thumb));
+    background-clip: padding-box;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--scrollbar-thumb-hover));
+    background-clip: padding-box;
+  }
+
+  *::-webkit-scrollbar-corner {
+    background: hsl(var(--scrollbar-track));
   }
 
   html {
     /* iOS safe area support */
     padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Outfit', sans-serif;
+    width: 100%;
+    max-width: 100%;
     min-height: 100vh;
     min-height: -webkit-fill-available;
+    overflow-x: hidden;
   }
 
   #root {
+    width: 100%;
+    max-width: 100%;
     min-height: 100vh;
     min-height: -webkit-fill-available;
+    overflow-x: hidden;
   }
 }
 

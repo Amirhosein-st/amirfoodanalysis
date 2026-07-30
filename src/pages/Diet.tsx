@@ -2,7 +2,8 @@ import { useEffect, useState, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Utensils, Clock, Flame, Check, ListChecks, Sparkles } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ArrowLeft, Utensils, Clock, Flame, Check, ListChecks, Sparkles, RefreshCw, BookOpen, ChefHat, Loader2 } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import IntroductionModal from "@/components/IntroductionModal";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,6 +40,16 @@ interface DietPlan {
   tips: string[];
 }
 
+interface Recipe {
+  name: string;
+  servings: number;
+  prepTime: string;
+  cookTime: string;
+  ingredients: Array<{ item: string; amount: string }>;
+  steps: string[];
+  notes?: string[];
+}
+
 const Diet = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -46,12 +57,19 @@ const Diet = () => {
   const { toast } = useToast();
   const [selectedOptions, setSelectedOptions] = useState<Record<number, number>>({});
   const [isSaving, setIsSaving] = useState(false);
+  const [refreshingMeal, setRefreshingMeal] = useState<number | null>(null);
+  const [mealOverrides, setMealOverrides] = useState<Record<number, Meal>>({});
+  const [recipeOpen, setRecipeOpen] = useState(false);
+  const [recipeLoading, setRecipeLoading] = useState(false);
+  const [recipe, setRecipe] = useState<Recipe | null>(null);
+  const [recipeFoodName, setRecipeFoodName] = useState("");
 
   // Normalize meals to always have options array
   const normalizedMeals = useMemo(() => {
     if (!diet?.meals) return [];
     
-    return diet.meals.map(meal => {
+    return diet.meals.map((originalMeal, mealIndex) => {
+      const meal = mealOverrides[mealIndex] || originalMeal;
       // If meal already has options array (new AI format), use it
       if (meal.options && Array.isArray(meal.options) && meal.options.length > 0) {
         return {
@@ -126,7 +144,217 @@ const Diet = () => {
         }]
       };
     });
-  }, [diet]);
+  }, [diet, mealOverrides]);
+
+  const handleRefreshMeal = async (mealIndex: number) => {
+    const meal = normalizedMeals[mealIndex];
+    if (!meal || refreshingMeal !== null) return;
+
+    setRefreshingMeal(mealIndex);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("You must be logged in");
+
+      const { data: healthProfile, error: healthError } = await supabase
+        .from("user_health_profiles")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      if (healthError || !healthProfile) throw new Error("Health profile not found");
+
+      const excludedOptions = normalizedMeals.flatMap((currentMeal) =>
+        (currentMeal.options || []).map((option) => ({
+          optionName: option.name,
+          foods: option.foods,
+        }))
+      );
+      const excludedFoodNames = excludedOptions.flatMap((option) => [
+        option.optionName,
+        ...option.foods,
+      ]);
+
+      // Keep using the existing full-diet endpoint. These request-only preferences
+      // become part of its current AI prompt without changing the saved profile.
+      const refreshProfile = {
+        ...healthProfile,
+        liked_foods: [
+          ...(healthProfile.liked_foods || []),
+          `Generate a fresh set of choices for ${meal.name}; vary the main ingredient and cooking method.`,
+        ],
+        disliked_foods: [
+          ...(healthProfile.disliked_foods || []),
+          ...excludedFoodNames.map((food) => `Do not repeat for this generation: ${food}`),
+        ],
+      };
+
+      const { data, error } = await supabase.functions.invoke("generate-diet", {
+        body: {
+          healthProfile: refreshProfile,
+        },
+      });
+
+      if (error) throw error;
+
+      const refreshedMeal = data?.meal
+        || data?.diet?.meals?.find(
+          (candidate: Meal) => candidate.name.toLowerCase() === meal.name.toLowerCase()
+        )
+        || data?.diet?.meals?.[mealIndex];
+
+      if (!refreshedMeal) {
+        throw new Error("AI did not return the requested meal");
+      }
+
+      const refreshedOptions = Array.isArray(refreshedMeal.options)
+        ? refreshedMeal.options
+        : refreshedMeal.foods_1 && refreshedMeal.foods_2 && refreshedMeal.foods_3
+          ? [refreshedMeal.foods_1, refreshedMeal.foods_2, refreshedMeal.foods_3].map(
+              (foods, optionIndex) => ({
+                name: `Option ${optionIndex + 1}`,
+                calories: refreshedMeal.calories || meal.targetCalories || 0,
+                description: refreshedMeal.description || "",
+                foods,
+              })
+            )
+          : null;
+
+      if (!refreshedOptions || refreshedOptions.length !== 3) {
+        throw new Error("AI did not return three new options");
+      }
+
+      setMealOverrides((current) => ({
+        ...current,
+        [mealIndex]: {
+          ...refreshedMeal,
+          name: meal.name,
+          time: meal.time,
+          targetCalories: meal.targetCalories,
+          options: refreshedOptions,
+        },
+      }));
+      setSelectedOptions((current) => ({ ...current, [mealIndex]: 0 }));
+      toast({
+        title: "New meal options ready",
+        description: `Three fresh ${meal.name.toLowerCase()} options were generated.`,
+      });
+    } catch (error) {
+      console.error("Error refreshing meal:", error);
+      toast({
+        title: "Could not refresh this meal",
+        description: "Please try again in a moment.",
+        variant: "destructive",
+      });
+    } finally {
+      setRefreshingMeal(null);
+    }
+  };
+
+  const handleViewRecipe = async (option: MealOption) => {
+    setRecipeFoodName(option.name);
+    setRecipe(null);
+    setRecipeOpen(true);
+    setRecipeLoading(true);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("You must be logged in");
+
+      const { data: healthProfile, error: healthError } = await supabase
+        .from("user_health_profiles")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      if (healthError || !healthProfile) throw new Error("Health profile not found");
+
+      const recipePromptProfile = {
+        ...healthProfile,
+        liked_foods: [
+          ...(healthProfile.liked_foods || []),
+          `RECIPE REQUEST: Create ${option.name} using ${option.foods.join(", ")}. In the option description, give clear numbered cooking steps. In the foods list, include practical quantities for each ingredient. Keep it near ${option.calories} calories per serving.`,
+        ],
+        disliked_foods: [
+          ...(healthProfile.disliked_foods || []),
+          "For this request, do not replace the requested dish with a different dish.",
+        ],
+      };
+
+      const { data, error } = await supabase.functions.invoke("generate-diet", {
+        body: {
+          healthProfile: recipePromptProfile,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.recipe) {
+        setRecipe(data.recipe);
+      } else {
+        const generatedMeals: Meal[] = data?.diet?.meals || [];
+        const generatedOptions = generatedMeals.flatMap((meal) => {
+          if (Array.isArray(meal.options)) return meal.options;
+          if (Array.isArray(meal.foods)) {
+            return [{
+              name: meal.name,
+              calories: meal.calories || option.calories,
+              description: meal.description,
+              foods: meal.foods,
+            }];
+          }
+          return [];
+        });
+        const generatedOption = generatedOptions.find((candidate) =>
+          candidate.name.toLowerCase().includes(option.name.toLowerCase())
+          || option.name.toLowerCase().includes(candidate.name.toLowerCase())
+        );
+
+        if (!generatedOption) {
+          throw new Error(`AI returned a different dish instead of ${option.name}`);
+        }
+
+        const instructionText = generatedOption.description || option.description || "";
+        const parsedSteps = instructionText
+          .split(/(?:\s*\d+[.)]\s+|\s*;\s*)/)
+          .map((step) => step.trim())
+          .filter(Boolean);
+        const ingredients = (generatedOption.foods?.length ? generatedOption.foods : option.foods)
+          .map((food) => {
+            const quantityMatch = food.match(/^(.+?)\s*[-–:]\s*(.+)$/);
+            return quantityMatch
+              ? { item: quantityMatch[1].trim(), amount: quantityMatch[2].trim() }
+              : { item: food, amount: "As needed" };
+          });
+
+        setRecipe({
+          name: option.name,
+          servings: 1,
+          prepTime: "15 minutes",
+          cookTime: "30 minutes",
+          ingredients,
+          steps: parsedSteps.length >= 2
+            ? parsedSteps
+            : [
+                instructionText || `Prepare all ingredients for ${option.name}.`,
+                "Measure and prepare the ingredients listed above.",
+                "Cook the main ingredients using the method described, stirring or turning as needed.",
+                "Check that everything is fully cooked, adjust seasoning, and serve warm.",
+              ],
+          notes: [`Designed for approximately ${option.calories} kcal per serving.`],
+        });
+      }
+    } catch (error) {
+      console.error("Error generating recipe:", error);
+      toast({
+        title: "Could not load the recipe",
+        description: "Please try again in a moment.",
+        variant: "destructive",
+      });
+      setRecipeOpen(false);
+    } finally {
+      setRecipeLoading(false);
+    }
+  };
 
   // Initialize selected options (default to first option or load from localStorage)
   useEffect(() => {
@@ -203,6 +431,7 @@ const Diet = () => {
 
       return {
         name: meal.name,
+        optionName: selectedOption.name,
         time: meal.time,
         calories: selectedOption.calories,
         description: selectedOption.description || "",
@@ -246,6 +475,7 @@ const Diet = () => {
 
         return {
           name: meal.name,
+          optionName: selectedOption.name,
           time: meal.time,
           calories: selectedOption.calories,
           description: selectedOption.description || "",
@@ -364,17 +594,33 @@ const Diet = () => {
           <div className="space-y-8">
             {normalizedMeals.map((meal, mealIndex) => (
               <div key={mealIndex} className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Utensils className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-semibold text-foreground">{meal.name}</h2>
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <Clock className="w-3 h-3" />
-                      Recommended time: {meal.time}
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Utensils className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-semibold text-foreground">{meal.name}</h2>
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                        <Clock className="w-3 h-3" />
+                        Recommended time: {meal.time}
+                      </div>
                     </div>
                   </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="shrink-0 gap-2 border-primary/30 text-primary hover:bg-primary/10 hover:text-primary"
+                    onClick={() => handleRefreshMeal(mealIndex)}
+                    disabled={refreshingMeal !== null}
+                    aria-label={`Generate three new options for ${meal.name}`}
+                  >
+                    <RefreshCw className={`w-4 h-4 ${refreshingMeal === mealIndex ? "animate-spin" : ""}`} />
+                    <span className="hidden sm:inline">
+                      {refreshingMeal === mealIndex ? "Refreshing..." : "New options"}
+                    </span>
+                  </Button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -384,7 +630,7 @@ const Diet = () => {
                     return (
                       <Card 
                         key={optionIndex} 
-                        className={`cursor-pointer transition-all hover:border-primary/50 relative overflow-hidden ${
+                        className={`relative flex h-full cursor-pointer flex-col overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/60 hover:shadow-lg ${
                           isSelected ? "border-primary ring-1 ring-primary shadow-lg bg-primary/5" : "border-border"
                         }`}
                         onClick={() => handleOptionSelect(mealIndex, optionIndex)}
@@ -402,7 +648,7 @@ const Diet = () => {
                             {option.calories} kcal
                           </div>
                         </CardHeader>
-                        <CardContent className="pt-2">
+                        <CardContent className="flex flex-1 flex-col pt-2">
                           <p className={`text-sm mb-3 min-h-[40px] ${isSelected ? "text-foreground" : "text-muted-foreground"}`}>
                             {option.description || "No description available"}
                           </p>
@@ -419,6 +665,31 @@ const Diet = () => {
                                 {food}
                               </span>
                             ))}
+                          </div>
+                          <div className="mt-auto pt-5">
+                            <div className="mb-4 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+                            <Button
+                              type="button"
+                              variant={isSelected ? "default" : "outline"}
+                              className={`group/recipe h-11 w-full gap-2 rounded-xl font-semibold shadow-sm transition-all duration-300 ${
+                                isSelected
+                                  ? "gradient-primary text-primary-foreground hover:opacity-90 hover:shadow-glow"
+                                  : "border-primary/35 bg-primary/5 text-primary hover:border-primary hover:bg-primary hover:text-primary-foreground hover:shadow-md"
+                              }`}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                handleViewRecipe(option);
+                              }}
+                            >
+                              <span className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
+                                isSelected
+                                  ? "bg-primary-foreground/15"
+                                  : "bg-primary/10 group-hover/recipe:bg-primary-foreground/15"
+                              }`}>
+                                <BookOpen className="w-4 h-4" />
+                              </span>
+                              View full recipe
+                            </Button>
                           </div>
                         </CardContent>
                       </Card>
@@ -447,6 +718,79 @@ const Diet = () => {
               </Card>
             </div>
           )}
+
+          <Dialog open={recipeOpen} onOpenChange={setRecipeOpen}>
+            <DialogContent className="w-[calc(100%-2rem)] max-w-2xl max-h-[90vh] overflow-x-hidden overflow-y-auto break-words">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 pr-8 text-xl">
+                  <ChefHat className="w-5 h-5 text-primary" />
+                  {recipe?.name || recipeFoodName}
+                </DialogTitle>
+                <DialogDescription>
+                  AI-generated recipe for viewing only. Nothing is saved.
+                </DialogDescription>
+              </DialogHeader>
+
+              {recipeLoading ? (
+                <div className="flex min-h-48 flex-col items-center justify-center gap-3 text-muted-foreground">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                  <p>Preparing your recipe...</p>
+                </div>
+              ) : recipe ? (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="rounded-lg border bg-secondary/40 p-3 text-center">
+                      <p className="text-xs text-muted-foreground">Servings</p>
+                      <p className="font-semibold">{recipe.servings}</p>
+                    </div>
+                    <div className="rounded-lg border bg-secondary/40 p-3 text-center">
+                      <p className="text-xs text-muted-foreground">Prep</p>
+                      <p className="font-semibold">{recipe.prepTime}</p>
+                    </div>
+                    <div className="rounded-lg border bg-secondary/40 p-3 text-center">
+                      <p className="text-xs text-muted-foreground">Cook</p>
+                      <p className="font-semibold">{recipe.cookTime}</p>
+                    </div>
+                  </div>
+
+                  <section>
+                    <h3 className="mb-3 font-semibold text-foreground">Ingredients</h3>
+                    <div className="divide-y rounded-lg border">
+                      {recipe.ingredients.map((ingredient, index) => (
+                        <div key={index} className="flex min-w-0 flex-col gap-1 px-4 py-2.5 text-sm sm:flex-row sm:justify-between sm:gap-4">
+                          <span className="min-w-0 break-words">{ingredient.item}</span>
+                          <span className="min-w-0 break-words font-medium text-primary sm:max-w-[45%] sm:text-right">{ingredient.amount}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+
+                  <section>
+                    <h3 className="mb-3 font-semibold text-foreground">Instructions</h3>
+                    <ol className="space-y-3">
+                      {recipe.steps.map((step, index) => (
+                        <li key={index} className="flex min-w-0 gap-3 text-sm">
+                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+                            {index + 1}
+                          </span>
+                          <span className="min-w-0 break-words pt-0.5 text-muted-foreground">{step}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </section>
+
+                  {recipe.notes && recipe.notes.length > 0 && (
+                    <section className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+                      <h3 className="mb-2 font-semibold text-foreground">Notes</h3>
+                      <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+                        {recipe.notes.map((note, index) => <li key={index}>{note}</li>)}
+                      </ul>
+                    </section>
+                  )}
+                </div>
+              ) : null}
+            </DialogContent>
+          </Dialog>
       </main>
 
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-lg border-t border-border z-20">
