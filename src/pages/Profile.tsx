@@ -123,7 +123,12 @@ const Profile = () => {
     setSaving(true);
 
     try {
-      const updates: Record<string, unknown> = {};
+      const updates: {
+        username?: string;
+        username_set?: boolean;
+        avatar_url?: string;
+        avatar_set?: boolean;
+      } = {};
       
       // Only update username if not already set
       if (!usernameSet && username.trim()) {

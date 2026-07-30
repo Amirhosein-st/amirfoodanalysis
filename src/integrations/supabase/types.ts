@@ -53,6 +53,36 @@ export type Database = {
         }
         Relationships: []
       }
+      kv_records: {
+        Row: {
+          created_at: string
+          id: string
+          property_1: string
+          property_2: string
+          updated_at: string
+          user_id: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          property_1: string
+          property_2: string
+          updated_at?: string
+          user_id: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          property_1?: string
+          property_2?: string
+          updated_at?: string
+          user_id?: string
+          value?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_set: boolean | null
