@@ -27,14 +27,10 @@ Deno.serve(async (req) => {
     }
 
     const errors: Record<string, string> = {};
-    // `value` is part of the shared payload shape but ignored for lookups.
     for (const field of ["user_id", "property_1", "property_2"]) {
       if (!isValid(body?.[field])) {
         errors[field] = `${field} must be a non-empty string (max 1000 chars)`;
       }
-    }
-    if (body?.value !== undefined && typeof body.value !== "string") {
-      errors.value = "value must be a string when provided";
     }
     if (Object.keys(errors).length > 0) return json({ error: errors }, 400);
 
@@ -49,7 +45,7 @@ Deno.serve(async (req) => {
 
     const { data, error } = await supabase
       .from("kv_records")
-      .select("user_id, property_1, property_2, value")
+      .select("property_1, property_2, value")
       .eq("user_id", user_id)
       .eq("property_1", property_1)
       .eq("property_2", property_2)
