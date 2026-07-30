@@ -154,7 +154,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="bg-card/80 backdrop-blur-lg border-b border-border sticky top-0 z-10">
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img
@@ -172,6 +172,7 @@ const Home = () => {
           </div>
         </div>
       </header>
+      <div aria-hidden="true" className="h-[73px]" />
 
       <main className="px-4 pb-8 pt-8 flex flex-col items-center justify-center min-h-[calc(100vh-80px)]">
         <div className="text-center mb-8">

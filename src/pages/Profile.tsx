@@ -259,7 +259,7 @@ const Profile = () => {
   return (
     <div className="min-h-screen gradient-hero flex flex-col">
       {/* Header */}
-      <header className="bg-card/80 backdrop-blur-lg border-b border-border sticky top-0 z-10">
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={() => navigate(routes.home)}>
@@ -271,6 +271,7 @@ const Profile = () => {
           <ThemeToggle />
         </div>
       </header>
+      <div aria-hidden="true" className="h-[73px] shrink-0" />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 md:max-w-6xl flex-1 flex flex-col justify-center">

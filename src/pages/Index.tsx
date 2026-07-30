@@ -337,7 +337,7 @@ const Index = () => {
       />
 
       {/* Header */}
-      <header className="bg-card/80 backdrop-blur-lg border-b border-border sticky top-0 z-10">
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={() => navigate(routes.home)}>
@@ -353,6 +353,7 @@ const Index = () => {
           </div>
         </div>
       </header>
+      <div aria-hidden="true" className="h-[73px]" />
 
       <main className="container mx-auto px-4 py-6 space-y-6 pb-24">
         <CalorieSummary

@@ -271,7 +271,7 @@ const WeeklyChallenge = () => {
         description="Complete this challenge to unlock your personalized diet plan"
         steps={introSteps}
       />
-      <header className="sticky top-0 bg-card/80 backdrop-blur-lg border-b border-border z-10 w-full">
+      <header className="fixed inset-x-0 top-0 z-50 w-full border-b border-border bg-card/80 backdrop-blur-lg">
         <div className="max-w-[1400px] mx-auto p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={() => navigate(routes.home)}>
@@ -306,6 +306,7 @@ const WeeklyChallenge = () => {
           </div>
         </div>
       </header>
+      <div aria-hidden="true" className="h-[73px] w-full shrink-0" />
 
       <main className="p-4 pb-24 w-full max-w-[1400px]">
         {/* Progress */}

@@ -558,7 +558,7 @@ const Diet = () => {
         description="Here's how to customize your diet plan"
         steps={introSteps}
       />
-      <header className="sticky top-0 bg-card/80 backdrop-blur-lg border-b border-border z-10 w-full">
+      <header className="fixed inset-x-0 top-0 z-50 w-full border-b border-border bg-card/80 backdrop-blur-lg">
         <div className="max-w-[1400px] mx-auto p-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" onClick={() => navigate(routes.home)}>
@@ -569,6 +569,7 @@ const Diet = () => {
           <ThemeToggle />
         </div>
       </header>
+      <div aria-hidden="true" className="h-[73px] w-full shrink-0" />
 
       <main className="px-4 pb-32 pt-4 space-y-6 w-full max-w-[1400px]">
           {/* Total Calories Card */}

@@ -63,27 +63,46 @@ const Landing = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       {/* Header */}
-      <header className="bg-white/95 dark:bg-[#0f1f1b] border-b border-border sticky top-0 z-50 backdrop-blur">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-white/95 backdrop-blur dark:bg-[#0f1f1b]">
+        <div className="container mx-auto flex items-center justify-between gap-2 px-3 py-3 sm:gap-4 sm:px-4 sm:py-4">
+          <div className="flex min-w-0 shrink-0 items-center gap-2 sm:gap-3">
             <img
               src={logoUrl}
               alt="Rima Food Tracker logo"
-              className="w-9 h-9 rounded-xl object-cover shadow-md"
+              className="h-8 w-8 rounded-lg object-cover shadow-md sm:h-9 sm:w-9 sm:rounded-xl"
             />
-            <h1 className="text-xl font-bold text-foreground">Rima Food Tracker</h1>
+            <h1 aria-label="Rima Food Tracker" className="shrink-0">
+              <span
+                aria-hidden="true"
+                className="flex items-baseline gap-1.5 whitespace-nowrap sm:hidden"
+              >
+                <span className="text-lg font-bold tracking-tight text-foreground">Rima</span>
+                <span className="bg-gradient-to-br from-[#2d7d45] via-[#4f9f50] to-[#79bc55] bg-clip-text text-xl font-extrabold text-transparent">
+                  F
+                </span>
+                <span className="bg-gradient-to-br from-[#ff8500] via-[#ffa51f] to-[#ffc45a] bg-clip-text text-xl font-extrabold text-transparent">
+                  T
+                </span>
+              </span>
+              <span className="hidden whitespace-nowrap text-xl font-bold leading-none text-foreground sm:inline">
+                Rima Food Tracker
+              </span>
+            </h1>
           </div>
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-            <Button variant="ghost" onClick={() => navigate(routes.auth)}>
-              Sign In
-            </Button>
-            <Button onClick={() => navigate(routes.auth)}>
+          <div className="flex shrink-0 items-center gap-1 sm:gap-3">
+            <div className="[&>button]:h-9 [&>button]:w-9 sm:[&>button]:h-10 sm:[&>button]:w-10">
+              <ThemeToggle />
+            </div>
+            <Button
+              className="h-9 px-3 sm:h-10 sm:px-4"
+              onClick={() => navigate(routes.auth)}
+            >
               Get Started
             </Button>
           </div>
         </div>
       </header>
+      <div aria-hidden="true" className="h-[61px] sm:h-[73px]" />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden">
