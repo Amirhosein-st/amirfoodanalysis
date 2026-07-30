@@ -44,21 +44,19 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("kv_records")
       .upsert(
         { user_id, property_1, property_2, value, updated_at: new Date().toISOString() },
         { onConflict: "user_id,property_1,property_2" },
-      )
-      .select("user_id, property_1, property_2, value")
-      .single();
+      );
 
     if (error) {
       console.error("set error:", error);
       return json({ error: "Failed to save record" }, 500);
     }
 
-    return json(data, 200);
+    return json({ message: "successfully saved" }, 200);
   } catch (e) {
     console.error("set unexpected error:", e);
     return json({ error: "Internal server error" }, 500);
