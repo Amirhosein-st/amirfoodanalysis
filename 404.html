@@ -31,11 +31,99 @@
     <meta name="twitter:title" content="Rima Food Tracker" />
     <meta name="twitter:description" content="Track your nutrition and get personalized AI diet plans" />
     <meta name="twitter:image" content="logo.png" />
-    <script type="module" crossorigin src="/amirfoodanalysis/assets/index-CLjM7zig.js"></script>
-    <link rel="stylesheet" crossorigin href="/amirfoodanalysis/assets/index-C6DSdDUA.css">
+
+    <!-- Keep the branded start screen visible before JavaScript and app CSS load. -->
+    <link rel="preload" as="image" href="/amirfoodanalysis/logo.png" />
+    <style>
+      .rima-start-screen {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        padding: 24px;
+        background: #071b15;
+        color: #f5f7f2;
+        font-family: "Outfit", system-ui, sans-serif;
+        text-align: center;
+      }
+      .rima-start-brand { margin-top: -48px; }
+      .rima-start-logo {
+        display: block;
+        width: 176px;
+        height: 176px;
+        margin: 0 auto 12px;
+        border-radius: 32px;
+      }
+      .rima-start-title {
+        margin: 0;
+        color: #f5f7f2;
+        font-size: 48px;
+        font-weight: 700;
+        line-height: 1.15;
+        letter-spacing: -2px;
+      }
+      .rima-start-subtitle {
+        display: block;
+        margin-top: 10px;
+        color: #b0c7bc;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 1.5;
+        letter-spacing: 3px;
+      }
+      .rima-start-status {
+        position: absolute;
+        right: 24px;
+        bottom: calc(48px + env(safe-area-inset-bottom, 0px));
+        left: 24px;
+        color: #9eb8aa;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .rima-start-status p { margin: 14px 0 0; }
+      .rima-start-dots { display: flex; justify-content: center; gap: 8px; }
+      .rima-start-dots span {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #55ba80;
+        animation: rima-start-pulse 1.4s ease-in-out infinite;
+      }
+      .rima-start-dots span:nth-child(2) { animation-delay: 0.16s; }
+      .rima-start-dots span:nth-child(3) { animation-delay: 0.32s; }
+      @keyframes rima-start-pulse {
+        0%, 80%, 100% { opacity: 0.3; }
+        40% { opacity: 1; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .rima-start-dots span { animation: none; opacity: 0.75; }
+      }
+      @media (max-height: 440px) {
+        .rima-start-brand { margin-top: -24px; }
+        .rima-start-logo { width: 96px; height: 96px; }
+        .rima-start-title { font-size: 36px; }
+        .rima-start-status { bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+      }
+    </style>
+    <script type="module" crossorigin src="/amirfoodanalysis/assets/index-DDvHXZkD.js"></script>
+    <link rel="stylesheet" crossorigin href="/amirfoodanalysis/assets/index-CQzkKkri.css">
   <link rel="manifest" href="/amirfoodanalysis/manifest.webmanifest"></head>
 
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <main class="rima-start-screen" aria-label="Rima is starting" aria-busy="true">
+        <div class="rima-start-brand">
+          <img class="rima-start-logo" src="/amirfoodanalysis/logo.png" alt="" width="176" height="176" />
+          <h1 class="rima-start-title">Rima<span class="rima-start-subtitle">Food Tracker</span></h1>
+        </div>
+        <div class="rima-start-status" role="status" aria-live="polite">
+          <div class="rima-start-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+          <p>Getting things ready…</p>
+        </div>
+      </main>
+    </div>
   </body>
 </html>
