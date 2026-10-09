@@ -1,8 +1,8 @@
 {
   "packageId": "io.github.amirhosein_st.amirfoodanalysis.twa",
   "host": "amirhosein-st.github.io",
-  "name": "Rima Food Tracker",
-  "launcherName": "Rima",
+  "name": "Rima FT",
+  "launcherName": "Rima FT",
   "display": "standalone",
   "themeColor": "#22c55e",
   "themeColorDark": "#0a0a0b",
@@ -20,8 +20,8 @@
     "path": "rima-release.jks",
     "alias": "rima"
   },
-  "appVersion": "1.0.1",
-  "appVersionCode": 2,
+  "appVersion": "1.0.2",
+  "appVersionCode": 3,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://amirhosein-st.github.io/amirfoodanalysis/manifest.webmanifest",

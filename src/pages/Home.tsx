@@ -156,10 +156,10 @@ const Home = () => {
           <div className="flex items-center gap-3">
             <img
               src={logoUrl}
-              alt="Rima Food Tracker logo"
+              alt="Rima FT logo"
               className="w-8 h-8 rounded-lg object-cover"
             />
-            <h1 className="text-xl font-bold text-foreground">Rima Food Tracker</h1>
+            <h1 className="text-xl font-bold text-foreground">Rima FT</h1>
           </div>
           <div className="flex items-center gap-1">
             <ThemeToggle />

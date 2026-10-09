@@ -24,8 +24,8 @@ def twaManifest = [
     applicationId: 'io.github.amirhosein_st.amirfoodanalysis.twa',
     hostName: 'amirhosein-st.github.io', // The domain being opened in the TWA.
     launchUrl: '/amirfoodanalysis/', // The start path for the TWA. Must be relative to the domain.
-    name: 'Rima Food Tracker', // The application name.
-    launcherName: 'Rima', // The name shown on the Android Launcher.
+    name: 'Rima FT', // The application name.
+    launcherName: 'Rima FT', // The name shown on the Android Launcher.
     themeColor: '#22C55E', // The color used for the status bar.
     themeColorDark: '#0A0A0B', // The color used for the dark status bar.
     navigationColor: '#0A0A0B', // The color used for the navigation bar.
@@ -76,8 +76,8 @@ android {
         applicationId "io.github.amirhosein_st.amirfoodanalysis.twa"
         minSdkVersion 23
         targetSdkVersion 35
-        versionCode 2
-        versionName "1.0.1"
+        versionCode 3
+        versionName "1.0.2"
 
         // The name for the application
         resValue "string", "appName", twaManifest.name

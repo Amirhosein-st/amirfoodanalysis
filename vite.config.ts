@@ -24,8 +24,8 @@ export default defineConfig(({ mode }) => {
         registerType: "autoUpdate",
         includeAssets: [logoAsset],
         manifest: {
-          name: "Rima Food Tracker - Calorie & Diet Tracker",
-          short_name: "Rima",
+          name: "Rima FT",
+          short_name: "Rima FT",
           description: "Track your nutrition and get personalized AI diet plans",
           theme_color: "#22c55e",
           background_color: "#0a0a0b",

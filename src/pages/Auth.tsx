@@ -120,10 +120,10 @@ const Auth = () => {
         <div className="text-center mb-8 animate-fade-in">
           <img
             src={logoUrl}
-            alt="Rima Food Tracker logo"
+            alt="Rima FT logo"
             className="mx-auto mb-4 w-14 h-14 rounded-2xl object-cover shadow-md"
           />
-          <h1 className="text-3xl font-bold text-foreground">Rima Food Tracker</h1>
+          <h1 className="text-3xl font-bold text-foreground">Rima FT</h1>
           <p className="text-muted-foreground mt-2">Track your nutrition journey</p>
         </div>
 

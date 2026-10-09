@@ -2,7 +2,7 @@
   "name": "rima-food-tracker-twa",
   "version": "1.0.0",
   "private": true,
-  "description": "Android Trusted Web Activity for Rima Food Tracker",
+  "description": "Android Trusted Web Activity for Rima FT",
   "scripts": {
     "generate": "node scripts/generate.cjs",
     "setup-signing": "node scripts/setup-signing.cjs",

@@ -317,7 +317,7 @@ const Index = () => {
     <div className="min-h-screen gradient-hero">
       <IntroductionModal
         storageKey="tracker-intro-seen"
-        title="Welcome to Food Tracker! 🍽️"
+        title="Welcome to Rima FT! 🍽️"
         description="Let's get you started with tracking your daily nutrition"
         steps={introSteps}
       />
@@ -335,7 +335,7 @@ const Index = () => {
             <Button variant="ghost" size="icon" onClick={() => navigate(routes.home)}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <h1 className="text-xl font-bold text-foreground">Food Tracker</h1>
+            <h1 className="text-xl font-bold text-foreground">Rima FT</h1>
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />

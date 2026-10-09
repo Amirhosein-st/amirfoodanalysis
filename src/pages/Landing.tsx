@@ -68,15 +68,15 @@ const Landing = () => {
           <div className="flex min-w-0 shrink-0 items-center gap-2 sm:gap-3">
             <img
               src={logoUrl}
-              alt="Rima Food Tracker logo"
+              alt="Rima FT logo"
               className="h-8 w-8 rounded-lg object-cover shadow-md sm:h-9 sm:w-9 sm:rounded-xl"
             />
-            <h1 aria-label="Rima Food Tracker" className="shrink-0">
+            <h1 aria-label="Rima FT" className="shrink-0">
               <span
                 aria-hidden="true"
                 className="flex items-baseline gap-1.5 whitespace-nowrap sm:hidden"
               >
-                <span className="text-lg font-bold tracking-tight text-foreground">Rima</span>
+                <span className="text-lg font-bold tracking-tight text-foreground">Rima FT</span>
                 <span className="bg-gradient-to-br from-[#2d7d45] via-[#4f9f50] to-[#79bc55] bg-clip-text text-xl font-extrabold text-transparent">
                   F
                 </span>
@@ -85,7 +85,7 @@ const Landing = () => {
                 </span>
               </span>
               <span className="hidden whitespace-nowrap text-xl font-bold leading-none text-foreground sm:inline">
-                Rima Food Tracker
+                Rima FT
               </span>
             </h1>
           </div>
@@ -198,7 +198,7 @@ const Landing = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-                Why Choose Rima Food Tracker?
+                Why Choose Rima FT?
               </h2>
               <p className="text-lg text-muted-foreground mb-8">
                 Join our users who have transformed their relationship with food and achieved their health goals with our intelligent nutrition platform.
@@ -280,10 +280,10 @@ const Landing = () => {
             <div className="flex items-center gap-3">
               <img
                 src={logoUrl}
-                alt="Rima Food Tracker logo"
+                alt="Rima FT logo"
                 className="w-9 h-9 rounded-xl object-cover shadow-md"
               />
-              <span className="text-lg font-bold text-foreground">Rima Food Tracker</span>
+              <span className="text-lg font-bold text-foreground">Rima FT</span>
             </div>
 
             {/* <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
@@ -294,7 +294,7 @@ const Landing = () => {
             </div> */}
 
             <p className="text-sm text-muted-foreground">
-              © 2026 Rima Food Tracker. All rights reserved.
+              © 2026 Rima FT. All rights reserved.
             </p>
           </div>
         </div>

@@ -1,12 +1,12 @@
-# Rima Food Tracker — Android TWA
+# Rima FT — Android TWA
 
 This Android app opens **https://amirhosein-st.github.io/amirfoodanalysis/** using a Trusted Web Activity. It uses the existing Rima logo, green theme, dark splash screen, and portrait orientation. The web app and backend continue to run on their existing services.
 
 | Setting | Value |
 | --- | --- |
 | Application ID | `io.github.amirhosein_st.amirfoodanalysis.twa` |
-| Launcher label | Rima |
-| Version | 1.0.0 (code 1) |
+| Launcher label | Rima FT |
+| Version | 1.0.2 (code 3) |
 | Minimum Android | Android 6.0 / API 23 |
 | Compile / target SDK | Android 15 / API 35 |
 | Android Gradle plugin | 8.13.0 |
@@ -107,7 +107,7 @@ Publish the website update from the main project directory with `npm run deploy`
 
 The web build, TypeScript check, and startup component lint passed. Browser checks covered the screen before JavaScript loads, phone and landscape layouts, reduced motion, delayed authentication, delayed home data, and the transition into the signed-in home page.
 
-Android release 1.0.1 (version code 2) accompanies the updated website. The existing installed TWA also receives the website change automatically after its service worker updates.
+Android release 1.0.2 (version code 3) accompanies the updated website. The existing installed TWA also receives the website change automatically after its service worker updates.
 
 ## Validation
 
