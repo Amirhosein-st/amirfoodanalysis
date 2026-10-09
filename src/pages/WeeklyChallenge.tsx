@@ -8,6 +8,7 @@ import { ArrowLeft, Check, Loader2, LogOut, Plus, Sparkles, Trash2, X, User as U
 import { useToast } from "@/hooks/use-toast";
 import { User } from "@supabase/supabase-js";
 import ThemeToggle from "@/components/ThemeToggle";
+import StartScreen from "@/components/StartScreen";
 import IntroductionModal from "@/components/IntroductionModal";
 import AddWeeklyFoodDialog from "@/components/AddWeeklyFoodDialog";
 import { getMealTypeLabels } from "@/lib/mealTypes";
@@ -236,11 +237,7 @@ const WeeklyChallenge = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
+    return <StartScreen />;
   }
 
   const daysCompleted = getDayProgress();

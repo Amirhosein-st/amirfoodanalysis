@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/hooks/use-theme";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
+import StartScreen from "@/components/StartScreen";
 import Home from "./pages/Home";
 import Landing from "./pages/Landing";
 import Index from "./pages/Index";
@@ -59,9 +59,7 @@ const App = () => {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             ) : (
-              <div className="min-h-screen flex items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              </div>
+              <StartScreen />
             )}
           </BrowserRouter>
         </TooltipProvider>

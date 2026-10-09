@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "io.github.amirhosein_st.amirfoodanalysis.twa",
+      "sha256_cert_fingerprints": [
+        "28:8A:4E:1A:20:16:F2:36:DF:03:35:99:C8:D8:15:94:22:5D:B7:CE:B8:D2:5A:AD:37:22:E6:03:A9:7A:CE:0C"
+      ]
+    }
+  }
+]

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Utensils, Sparkles, Loader2, Calendar, User as UserIcon } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
+import StartScreen from "@/components/StartScreen";
 import { useToast } from "@/hooks/use-toast";
 import { User } from "@supabase/supabase-js";
 import { routes } from "@/lib/routes";
@@ -141,11 +142,7 @@ const Home = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
+    return <StartScreen />;
   }
 
   const displayName = profile?.username?.trim()

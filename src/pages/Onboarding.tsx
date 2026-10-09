@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
+import StartScreen from "@/components/StartScreen";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Leaf, ArrowLeft, ArrowRight, Check, Plus, X, Loader2 } from "lucide-react";
@@ -263,11 +264,7 @@ const Onboarding = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen gradient-hero flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
+    return <StartScreen />;
   }
 
   const progress = (currentStep / TOTAL_STEPS) * 100;

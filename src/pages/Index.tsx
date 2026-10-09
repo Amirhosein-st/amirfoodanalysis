@@ -7,6 +7,7 @@ import CalorieSummary from "@/components/CalorieSummary";
 import FoodEntryCard from "@/components/FoodEntryCard";
 import AddFoodDialog from "@/components/AddFoodDialog";
 import ThemeToggle from "@/components/ThemeToggle";
+import StartScreen from "@/components/StartScreen";
 import MealBreakdown from "@/components/MealBreakdown";
 import IntroductionModal from "@/components/IntroductionModal";
 import KcalRemainingModal from "@/components/KcalRemainingModal";
@@ -270,16 +271,7 @@ const Index = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen gradient-hero flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl gradient-primary shadow-glow mb-4 animate-pulse-glow">
-            <Leaf className="w-8 h-8 text-primary-foreground" />
-          </div>
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
+    return <StartScreen />;
   }
 
   if (!user) return null;

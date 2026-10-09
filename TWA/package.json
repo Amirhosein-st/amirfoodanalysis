@@ -1,0 +1,17 @@
+{
+  "name": "rima-food-tracker-twa",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Android Trusted Web Activity for Rima Food Tracker",
+  "scripts": {
+    "generate": "node scripts/generate.cjs",
+    "setup-signing": "node scripts/setup-signing.cjs",
+    "build": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1",
+    "build:mirror": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1 -UseGoogleMavenMirror",
+    "build:debug": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1 -DebugBuild",
+    "verify": "node scripts/verify.cjs"
+  },
+  "devDependencies": {
+    "@bubblewrap/core": "1.25.0"
+  }
+}

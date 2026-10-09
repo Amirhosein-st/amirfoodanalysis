@@ -1,0 +1,47 @@
+{
+  "packageId": "io.github.amirhosein_st.amirfoodanalysis.twa",
+  "host": "amirhosein-st.github.io",
+  "name": "Rima Food Tracker",
+  "launcherName": "Rima",
+  "display": "standalone",
+  "themeColor": "#22c55e",
+  "themeColorDark": "#0a0a0b",
+  "navigationColor": "#0a0a0b",
+  "navigationColorDark": "#0a0a0b",
+  "navigationDividerColor": "#0a0a0b",
+  "navigationDividerColorDark": "#0a0a0b",
+  "backgroundColor": "#0a0a0b",
+  "enableNotifications": false,
+  "startUrl": "/amirfoodanalysis/",
+  "iconUrl": "https://amirhosein-st.github.io/amirfoodanalysis/logo.png",
+  "maskableIconUrl": "https://amirhosein-st.github.io/amirfoodanalysis/logo.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "rima-release.jks",
+    "alias": "rima"
+  },
+  "appVersion": "1.0.1",
+  "appVersionCode": 2,
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://amirhosein-st.github.io/amirfoodanalysis/manifest.webmanifest",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://amirhosein-st.github.io/amirfoodanalysis/",
+  "minSdkVersion": 23,
+  "orientation": "portrait",
+  "fingerprints": [
+    {
+      "name": "Local release signing key",
+      "value": "28:8A:4E:1A:20:16:F2:36:DF:03:35:99:C8:D8:15:94:22:5D:B7:CE:B8:D2:5A:AD:37:22:E6:03:A9:7A:CE:0C"
+    }
+  ],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": []
+}
